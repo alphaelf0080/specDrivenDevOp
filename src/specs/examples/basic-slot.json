@@ -1,0 +1,63 @@
+{
+  "meta": { "name": "Basic 5x3", "version": "1.0.0" },
+  "reels": {
+    "columns": 5,
+    "rows": 3,
+    "strips": [
+      ["A", "K", "Q", "J", "10", "9", "W", "S", "A", "K", "Q", "J", "10", "9"],
+      ["A", "K", "Q", "J", "10", "9", "A", "K", "Q", "W", "J", "10", "S", "9"],
+      ["A", "K", "Q", "J", "10", "9", "A", "K", "Q", "J", "10", "9", "W", "S"],
+      ["A", "K", "Q", "J", "10", "9", "W", "A", "K", "Q", "J", "10", "9", "S"],
+      ["A", "K", "Q", "J", "10", "9", "A", "K", "Q", "J", "10", "9", "W", "S"]
+    ]
+  },
+  "symbols": [
+    { "id": "A", "type": "regular", "weight": 1 },
+    { "id": "K", "type": "regular", "weight": 1 },
+    { "id": "Q", "type": "regular", "weight": 1 },
+    { "id": "J", "type": "regular", "weight": 1 },
+    { "id": "10", "type": "regular", "weight": 1 },
+    { "id": "9", "type": "regular", "weight": 1 },
+    { "id": "W", "type": "wild", "weight": 0.5 },
+    { "id": "S", "type": "scatter", "weight": 0.2 }
+  ],
+  "paytable": [
+  { "symbol": "A", "ofAKind": 3, "payout": 8.75 },
+  { "symbol": "A", "ofAKind": 4, "payout": 35 },
+  { "symbol": "A", "ofAKind": 5, "payout": 175 },
+  { "symbol": "K", "ofAKind": 3, "payout": 7 },
+  { "symbol": "K", "ofAKind": 4, "payout": 26.25 },
+  { "symbol": "K", "ofAKind": 5, "payout": 140 },
+  { "symbol": "Q", "ofAKind": 3, "payout": 5.25 },
+  { "symbol": "Q", "ofAKind": 4, "payout": 17.5 },
+  { "symbol": "Q", "ofAKind": 5, "payout": 105 },
+  { "symbol": "J", "ofAKind": 3, "payout": 3.5 },
+  { "symbol": "J", "ofAKind": 4, "payout": 14 },
+  { "symbol": "J", "ofAKind": 5, "payout": 70 },
+  { "symbol": "10", "ofAKind": 3, "payout": 2.625 },
+  { "symbol": "10", "ofAKind": 4, "payout": 10.5 },
+  { "symbol": "10", "ofAKind": 5, "payout": 52.5 },
+  { "symbol": "9", "ofAKind": 3, "payout": 1.75 },
+  { "symbol": "9", "ofAKind": 4, "payout": 7 },
+  { "symbol": "9", "ofAKind": 5, "payout": 35 },
+  { "symbol": "S", "ofAKind": 3, "payout": 17.5 },
+  { "symbol": "S", "ofAKind": 4, "payout": 87.5 },
+  { "symbol": "S", "ofAKind": 5, "payout": 350 }
+  ],
+  "paylines": [
+    { "id": "L1", "pattern": [1, 1, 1, 1, 1] },
+    { "id": "L2", "pattern": [0, 0, 0, 0, 0] },
+    { "id": "L3", "pattern": [2, 2, 2, 2, 2] },
+    { "id": "L4", "pattern": [0, 1, 2, 1, 0] },
+    { "id": "L5", "pattern": [2, 1, 0, 1, 2] },
+    { "id": "L6", "pattern": [0, 0, 1, 0, 0] },
+    { "id": "L7", "pattern": [2, 2, 1, 2, 2] },
+    { "id": "L8", "pattern": [1, 0, 1, 2, 1] },
+    { "id": "L9", "pattern": [1, 2, 1, 0, 1] },
+    { "id": "L10", "pattern": [0, 1, 1, 1, 2] }
+  ],
+  "bet": { "currency": "credits", "betPerLine": 1, "lines": 10 },
+  "jackpots": [],
+  "features": [],
+  "targetRTP": 0.95
+}
