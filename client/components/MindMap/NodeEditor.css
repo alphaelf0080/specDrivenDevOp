@@ -1,0 +1,287 @@
+/* 節點編輯器樣式 */
+.node-editor-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.node-editor {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.node-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.node-editor-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.node-editor-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.node-editor-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.node-editor-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.node-editor-section {
+  margin-bottom: 24px;
+}
+
+.node-editor-section:last-child {
+  margin-bottom: 0;
+}
+
+.node-editor-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.node-editor-sublabel {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.node-editor-preview {
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.3s;
+}
+
+.preview-label {
+  font-weight: inherit;
+}
+
+.preview-description {
+  text-align: center;
+  word-break: break-word;
+}
+
+.node-editor-text-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.node-editor-text-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.node-editor-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  transition: all 0.2s;
+}
+
+.node-editor-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.node-editor-presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.node-editor-preset {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.node-editor-preset:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.node-editor-preset:active {
+  transform: scale(0.95);
+}
+
+.node-editor-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.node-editor-field {
+  flex: 1;
+  min-width: 150px;
+}
+
+.node-editor-color-input {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.node-editor-small-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-top: 4px;
+  font-family: monospace;
+}
+
+.node-editor-range {
+  width: 100%;
+  margin: 8px 0;
+}
+
+.node-editor-value {
+  display: inline-block;
+  min-width: 40px;
+  text-align: right;
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.node-editor-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.node-editor-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.node-editor-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: #f9fafb;
+}
+
+.node-editor-button {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.node-editor-button-cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.node-editor-button-cancel:hover {
+  background: #e5e7eb;
+}
+
+.node-editor-button-save {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.node-editor-button-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.node-editor-button-save:active {
+  transform: translateY(0);
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .node-editor {
+    width: 95%;
+    max-height: 95vh;
+  }
+
+  .node-editor-row {
+    flex-direction: column;
+  }
+
+  .node-editor-field {
+    min-width: 100%;
+  }
+}

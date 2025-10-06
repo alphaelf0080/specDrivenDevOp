@@ -17,6 +17,7 @@ import MindMapNode from './MindMapNode';
 import ContextMenu, { ContextMenuPosition } from './ContextMenu';
 import NodeStyleEditor from './NodeStyleEditor';
 import EdgeStyleEditor from './EdgeStyleEditor';
+import NodeEditor from './NodeEditor';
 import { MindMapConfig } from '../../types/mindmap';
 import './MindMapCanvas.css';
 
@@ -56,6 +57,9 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
   // 樣式編輯器狀態
   const [editingNode, setEditingNode] = useState<Node | null>(null);
   const [editingEdge, setEditingEdge] = useState<Edge | null>(null);
+  
+  // 節點完整編輯器狀態（雙擊觸發）
+  const [nodeBeingEdited, setNodeBeingEdited] = useState<Node | null>(null);
 
   // 當節點數量變化時更新（新增/刪除節點）
   useEffect(() => {
@@ -154,6 +158,16 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
     setSelectedNode(null);
     setSelectedEdge(null);
   }, []);
+
+  // 雙擊節點處理 - 開啟完整編輯器
+  const onNodeDoubleClick = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      event.preventDefault();
+      setNodeBeingEdited(node);
+      setContextMenu(null);
+    },
+    []
+  );
 
   // 節點操作
   const handleAddNode = useCallback(
@@ -269,6 +283,72 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
     [setEdges, onEdgesChange]
   );
 
+  // 處理節點完整編輯（文字+樣式）
+  const handleSaveNodeEdit = useCallback(
+    (nodeId: string, updates: { label?: string; description?: string; style?: any }) => {
+      console.log('🔧 Saving node edit:', { nodeId, updates });
+      
+      setNodes((nds) => {
+        const updatedNodes = nds.map((n) => {
+          if (n.id !== nodeId) return n;
+
+          // 創建深拷貝避免突變
+          const updatedNode: Node = {
+            ...n,
+            data: { ...n.data },
+          };
+
+          // 更新標籤
+          if (updates.label !== undefined) {
+            updatedNode.data.label = updates.label;
+            console.log('✏️ Updated label:', updates.label);
+          }
+
+          // 更新描述
+          if (updates.description !== undefined) {
+            updatedNode.data.data = {
+              ...(updatedNode.data.data || {}),
+              description: updates.description,
+            };
+            console.log('📝 Updated description:', updates.description);
+          }
+
+          // 更新樣式
+          if (updates.style) {
+            updatedNode.data.style = updates.style;
+            updatedNode.style = {
+              ...updatedNode.style,
+              backgroundColor: updates.style.backgroundColor,
+              borderColor: updates.style.borderColor,
+              borderWidth: `${updates.style.borderWidth}px`,
+              borderStyle: 'solid',
+              color: updates.style.textColor,
+              fontSize: `${updates.style.fontSize}px`,
+              borderRadius: `${updates.style.borderRadius}px`,
+              fontWeight: updates.style.fontWeight,
+            };
+            console.log('🎨 Updated style:', updatedNode.style);
+          }
+
+          console.log('✅ Updated node:', updatedNode);
+          return updatedNode;
+        });
+
+        // 通知父組件
+        if (onNodesChange) {
+          setTimeout(() => {
+            console.log('📤 Notifying parent with updated nodes');
+            onNodesChange(updatedNodes);
+          }, 0);
+        }
+
+        return updatedNodes;
+      });
+      setNodeBeingEdited(null);
+    },
+    [setNodes, onNodesChange]
+  );
+
   return (
     <div className="mindmap-canvas">
       <ReactFlow
@@ -280,6 +360,7 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
         onNodeContextMenu={onNodeContextMenu}
         onEdgeContextMenu={onEdgeContextMenu}
         onPaneContextMenu={onPaneContextMenu}
+        onNodeDoubleClick={onNodeDoubleClick}
         nodeTypes={nodeTypes}
         connectionMode={ConnectionMode.Loose}
         nodesDraggable={true}
@@ -343,6 +424,15 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
           edge={editingEdge}
           onSave={handleSaveEdgeStyle}
           onClose={() => setEditingEdge(null)}
+        />
+      )}
+
+      {/* 節點完整編輯器（雙擊觸發）*/}
+      {nodeBeingEdited && (
+        <NodeEditor
+          node={nodeBeingEdited}
+          onSave={handleSaveNodeEdit}
+          onClose={() => setNodeBeingEdited(null)}
         />
       )}
     </div>
