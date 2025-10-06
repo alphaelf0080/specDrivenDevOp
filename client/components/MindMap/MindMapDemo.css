@@ -1,0 +1,148 @@
+/* 心智圖示範頁面樣式 */
+
+.mindmap-demo {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.mindmap-toolbar {
+  background: white;
+  padding: 16px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.mindmap-toolbar h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mindmap-toolbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.mindmap-toolbar-actions button {
+  padding: 8px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: white;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mindmap-toolbar-actions button:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #6366f1;
+  color: #6366f1;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mindmap-toolbar-actions button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.mindmap-toolbar-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mindmap-toolbar-danger {
+  color: #dc2626 !important;
+  border-color: #fecaca !important;
+}
+
+.mindmap-toolbar-danger:hover:not(:disabled) {
+  background: #fef2f2 !important;
+  border-color: #dc2626 !important;
+  color: #dc2626 !important;
+}
+
+.mindmap-toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: #e2e8f0;
+  margin: 0 4px;
+}
+
+.mindmap-demo-canvas {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  margin: 16px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mindmap-info {
+  background: white;
+  padding: 12px 24px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.mindmap-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mindmap-info strong {
+  color: #1e293b;
+  margin: 0 4px;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .mindmap-toolbar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .mindmap-toolbar-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .mindmap-toolbar-actions button {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .mindmap-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .mindmap-info p {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}

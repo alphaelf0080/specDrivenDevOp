@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test MindMap Data</title>
+</head>
+<body>
+    <h1>MindMap Data Test</h1>
+    <pre id="output"></pre>
+    <script type="module">
+        import { sddMindMapData } from './client/data/sdd-mindmap-data.ts';
+        document.getElementById('output').textContent = JSON.stringify(sddMindMapData, null, 2);
+    </script>
+</body>
+</html>
