@@ -32,13 +32,13 @@ client/
 npm run dev
 
 # 或分別啟動
-npm run dev:server  # 後端：http://localhost:3020
-npm run dev:client  # 前端：http://localhost:3000
+npm run dev:server  # 後端：http://localhost:5010
+npm run dev:client  # 前端：http://localhost:5030
 ```
 
 ### 2. 訪問心智圖
 
-1. 開啟瀏覽器：http://localhost:3000
+1. 開啟瀏覽器：http://localhost:5030
 2. 點擊「📊 開啟心智圖」按鈕
 3. 開始使用心智圖工具
 

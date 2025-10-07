@@ -5,7 +5,7 @@ import MindMapCanvas from './MindMapCanvas';
 import { useMindMap } from '../../hooks/useMindMap';
 import { MindMapData, MindMapNode, MindMapEdge } from '../../types/mindmap';
 
-const API_BASE_URL = 'http://localhost:3020/api';
+const API_BASE_URL = '/api';
 
 interface MindMapManagerPageProps {
   onClose?: () => void;

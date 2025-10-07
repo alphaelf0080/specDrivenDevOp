@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3020;
+const PORT = process.env.PORT || 5010;
 const NODE_ENV = process.env.NODE_ENV || "development";
 
 const DATA_DIR = path.join(__dirname, "../data");
@@ -21,7 +21,7 @@ const DATA_DIR = path.join(__dirname, "../data");
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3030",
+  origin: process.env.CLIENT_URL || "http://localhost:5030",
     credentials: true,
   }),
 );
@@ -40,6 +40,7 @@ type MindMapNode = {
   type?: string;
   position?: MindMapPosition;
   data?: Record<string, unknown>;
+  style?: Record<string, unknown>;
   [key: string]: unknown;
 };
 
@@ -50,6 +51,12 @@ type MindMapEdge = {
   type?: string;
   label?: string;
   data?: Record<string, unknown>;
+  style?: Record<string, unknown>;
+  animated?: boolean;
+  sourceHandle?: string;
+  targetHandle?: string;
+  markerStart?: Record<string, unknown>;
+  markerEnd?: Record<string, unknown>;
   [key: string]: unknown;
 };
 
@@ -107,6 +114,10 @@ const coerceNodes = (value: unknown): MindMapNode[] => {
         node.data = item.data;
       }
 
+      if (isRecord((item as any).style)) {
+        node.style = (item as any).style as Record<string, unknown>;
+      }
+
       return node;
     })
     .filter((node): node is MindMapNode => node !== null);
@@ -146,6 +157,27 @@ const coerceEdges = (value: unknown): MindMapEdge[] => {
 
       if (isRecord(item.data)) {
         edge.data = item.data;
+      }
+
+      if (isRecord((item as any).style)) {
+        edge.style = (item as any).style as Record<string, unknown>;
+      }
+
+      if (typeof (item as any).animated === 'boolean') {
+        edge.animated = (item as any).animated as boolean;
+      }
+      if (typeof (item as any).sourceHandle === 'string') {
+        edge.sourceHandle = (item as any).sourceHandle as string;
+      }
+      if (typeof (item as any).targetHandle === 'string') {
+        edge.targetHandle = (item as any).targetHandle as string;
+      }
+
+      if (isRecord((item as any).markerStart)) {
+        edge.markerStart = (item as any).markerStart as Record<string, unknown>;
+      }
+      if (isRecord((item as any).markerEnd)) {
+        edge.markerEnd = (item as any).markerEnd as Record<string, unknown>;
       }
 
       return edge;
@@ -387,7 +419,60 @@ app.post("/api/mindmap/layout/:id", async (req: Request, res: Response) => {
     }
 
     const timestamp = new Date().toISOString();
-    const normalized = normalizeLayout(layout);
+    const incoming = normalizeLayout(layout);
+
+    // 讀取現有檔案，合併缺漏的 style，避免覆蓋流失
+    const existingRaw = await readJsonFile<unknown | null>(
+      path.join(DATA_DIR, `${id}-layout.json`),
+      null,
+    );
+    const existing = normalizeLayout(existingRaw);
+
+    const existingNodeMap = new Map(existing.nodes.map((n) => [n.id, n] as const));
+    const mergedNodes: MindMapNode[] = incoming.nodes.map((n) => {
+      const prev = existingNodeMap.get(n.id);
+      const style = isRecord(n.style) ? n.style : (isRecord(prev?.style) ? prev!.style : undefined);
+      return { ...n, ...(style ? { style } : {}) };
+    });
+
+    const existingEdgeKey = (e: MindMapEdge) => `${e.source}->${e.target}`;
+    const existingEdgeMap = new Map(existing.edges.map((e) => [existingEdgeKey(e), e] as const));
+    const mergedEdges: MindMapEdge[] = incoming.edges.map((e) => {
+      const prev = existingEdgeMap.get(existingEdgeKey(e));
+      const style = isRecord(e.style) ? e.style : (isRecord(prev?.style) ? prev!.style : undefined);
+      const animated = typeof e.animated === 'boolean' ? e.animated : (typeof prev?.animated === 'boolean' ? prev!.animated : undefined);
+      const type = typeof e.type === 'string' ? e.type : (typeof prev?.type === 'string' ? prev!.type : undefined);
+      const hasIncomingStart = (e as any).markerStart !== undefined;
+      const hasIncomingEnd = (e as any).markerEnd !== undefined;
+      const markerStart = (e as any).markerStart === null
+        ? undefined
+        : (isRecord((e as any).markerStart)
+            ? (e as any).markerStart as Record<string, unknown>
+            : (hasIncomingStart ? undefined : (isRecord((prev as any)?.markerStart) ? (prev as any).markerStart as Record<string, unknown> : undefined)));
+      const markerEnd = (e as any).markerEnd === null
+        ? undefined
+        : (isRecord((e as any).markerEnd)
+            ? (e as any).markerEnd as Record<string, unknown>
+            : (hasIncomingEnd ? undefined : (isRecord((prev as any)?.markerEnd) ? (prev as any).markerEnd as Record<string, unknown> : undefined)));
+      const sourceHandle = typeof (e as any).sourceHandle === 'string'
+        ? (e as any).sourceHandle as string
+        : (typeof (prev as any)?.sourceHandle === 'string' ? (prev as any).sourceHandle as string : undefined);
+      const targetHandle = typeof (e as any).targetHandle === 'string'
+        ? (e as any).targetHandle as string
+        : (typeof (prev as any)?.targetHandle === 'string' ? (prev as any).targetHandle as string : undefined);
+      return {
+        ...e,
+        ...(style ? { style } : {}),
+        ...(animated !== undefined ? { animated } : {}),
+        ...(type ? { type } : {}),
+        ...(markerStart ? { markerStart } : {}),
+        ...(markerEnd ? { markerEnd } : {}),
+        ...(sourceHandle ? { sourceHandle } : {}),
+        ...(targetHandle ? { targetHandle } : {}),
+      };
+    });
+
+    const normalized = { nodes: mergedNodes, edges: mergedEdges, updatedAt: incoming.updatedAt };
 
     await saveLayoutFile(id, normalized, timestamp);
     await updateMetadataStats(id, normalized.nodes.length, timestamp);
@@ -490,7 +575,7 @@ app.get("/api/mindmap/list", async (req: Request, res: Response) => {
 
 app.post("/api/mindmap/create", async (req: Request, res: Response) => {
   try {
-    const { name, description, template = "blank" } = req.body;
+  const { name, description, template = "blank" } = req.body;
 
     if (!name || !name.trim()) {
       return res.status(400).json({
@@ -521,7 +606,7 @@ app.post("/api/mindmap/create", async (req: Request, res: Response) => {
 
     let initialLayout: MindMapLayout = { nodes: [], edges: [] };
 
-    if (template === "basic") {
+  if (template === "basic") {
       initialLayout = {
         nodes: [
           {
@@ -534,7 +619,7 @@ app.post("/api/mindmap/create", async (req: Request, res: Response) => {
         edges: [],
       };
       metadata.nodeCount = initialLayout.nodes.length;
-    } else if (template === "sdd") {
+  } else if (template === "sdd") {
       try {
         const sddRaw = await readJsonFile<unknown | null>(
           path.join(DATA_DIR, "sdd-mindmap-layout.json"),
@@ -548,6 +633,21 @@ app.post("/api/mindmap/create", async (req: Request, res: Response) => {
         metadata.nodeCount = normalized.nodes.length;
       } catch (error) {
         console.warn("Failed to load SDD template, fallback to blank", error);
+      }
+    } else if (template === "art") {
+      try {
+        const artRaw = await readJsonFile<unknown | null>(
+          path.join(DATA_DIR, "art-mindmap-layout.json"),
+          null,
+        );
+        const normalized = normalizeLayout(artRaw);
+        initialLayout = {
+          nodes: normalized.nodes,
+          edges: normalized.edges,
+        };
+        metadata.nodeCount = normalized.nodes.length;
+      } catch (error) {
+        console.warn("Failed to load ART template, fallback to blank", error);
       }
     }
 

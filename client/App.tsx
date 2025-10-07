@@ -3,9 +3,13 @@ import MindMapDemo from './components/MindMap/MindMapDemo';
 import SDDMindMap from './components/MindMap/SDDMindMap';
 import MindMapManagerPage from './components/MindMap/MindMapManagerPage';
 import HomePage from './components/Navigation/HomePage';
+import { TreeDemoPage } from './components/Tree';
+import TreeUiLayoutPage from './components/Tree/TreeUiLayoutPage';
+import TreePsdStructurePage from './components/Tree/TreePsdStructurePage';
+import TreeUiLayoutRichPage from './components/Tree/TreeUiLayoutRichPage';
 import './App.css';
 
-type PageView = 'home' | 'mindmap-manager' | 'sdd-mindmap' | 'demo-mindmap' | 'slot-engine';
+type PageView = 'home' | 'mindmap-manager' | 'sdd-mindmap' | 'demo-mindmap' | 'slot-engine' | 'tree-demo' | 'tree-ui-layout' | 'tree-ui-layout-rich' | 'tree-psd-structure';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageView>('home');
@@ -14,7 +18,7 @@ function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const view = params.get('view') as PageView;
-    if (view && ['mindmap-manager', 'sdd-mindmap', 'demo-mindmap', 'slot-engine'].includes(view)) {
+    if (view && ['mindmap-manager', 'sdd-mindmap', 'demo-mindmap', 'slot-engine', 'tree-demo', 'tree-ui-layout', 'tree-ui-layout-rich', 'tree-psd-structure'].includes(view)) {
       setCurrentPage(view);
     }
   }, []);
@@ -102,6 +106,46 @@ function App() {
             <h1>🎮 老虎機引擎</h1>
             <p style={{ fontSize: '1.2rem', color: '#718096', marginTop: '1rem' }}>功能開發中...</p>
           </div>
+        </div>
+      );
+
+    case 'tree-demo':
+      return (
+        <div style={{ position: 'relative' }}>
+          <button onClick={handleBackToHome} style={backButtonStyle}>
+            ← 返回首頁
+          </button>
+          <TreeDemoPage />
+        </div>
+      );
+
+    case 'tree-ui-layout':
+      return (
+        <div style={{ position: 'relative' }}>
+          <button onClick={handleBackToHome} style={backButtonStyle}>
+            ← 返回首頁
+          </button>
+          <TreeUiLayoutPage />
+        </div>
+      );
+
+    case 'tree-ui-layout-rich':
+      return (
+        <div style={{ position: 'relative' }}>
+          <button onClick={handleBackToHome} style={backButtonStyle}>
+            ← 返回首頁
+          </button>
+          <TreeUiLayoutRichPage />
+        </div>
+      );
+
+    case 'tree-psd-structure':
+      return (
+        <div style={{ position: 'relative' }}>
+          <button onClick={handleBackToHome} style={backButtonStyle}>
+            ← 返回首頁
+          </button>
+          <TreePsdStructurePage />
         </div>
       );
 

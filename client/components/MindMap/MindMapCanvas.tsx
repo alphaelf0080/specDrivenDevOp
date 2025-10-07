@@ -11,6 +11,8 @@ import ReactFlow, {
   addEdge,
   Connection,
   useReactFlow,
+  OnEdgeUpdateFunc,
+  applyEdgeChanges,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import MindMapNode from './MindMapNode';
@@ -85,9 +87,55 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
   // 連接處理
   const onConnect = useCallback(
     (connection: Connection) => {
-      setEdges((eds) => addEdge({ ...connection, animated: config.animated }, eds));
+      setEdges((eds) => {
+        // 依來源/目標節點動態補齊 handle，確保任意側都能連
+        const sourceNode = nodes.find((n) => n.id === connection.source);
+        const targetNode = nodes.find((n) => n.id === connection.target);
+        const isRoot = sourceNode && (((sourceNode.data as any)?.type === 'root') || sourceNode.id === 'root');
+        // 來源把手：若缺少，root 依目標方向；非 root 依向量方向選擇 source-* 把手
+        let sourceHandle = connection.sourceHandle as string | undefined;
+        if (!sourceHandle) {
+          if (isRoot) {
+            sourceHandle = getSourceHandleForRootNode(targetNode as Node);
+          } else if (sourceNode && targetNode) {
+            const dx = targetNode.position.x - sourceNode.position.x;
+            const dy = targetNode.position.y - sourceNode.position.y;
+            const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+            if (angle >= -45 && angle < 45) sourceHandle = 'source-right';
+            else if (angle >= 45 && angle < 135) sourceHandle = 'source-bottom';
+            else if (angle >= 135 || angle < -135) sourceHandle = 'source-left';
+            else sourceHandle = 'source-top';
+          } else {
+            sourceHandle = 'source';
+          }
+        }
+
+        // 若沒帶上 targetHandle，依方位挑選一個最接近的 target handle（目標面向來源）
+        let targetHandle = connection.targetHandle;
+        if (!targetHandle) {
+          targetHandle = 'target-right';
+          if (targetNode && sourceNode) {
+            const dxTS = sourceNode.position.x - targetNode.position.x;
+            const dyTS = sourceNode.position.y - targetNode.position.y;
+            const angle = Math.atan2(dyTS, dxTS) * (180 / Math.PI);
+            if (angle >= -45 && angle < 45) targetHandle = 'target-right';
+            else if (angle >= 45 && angle < 135) targetHandle = 'target-bottom';
+            else if (angle >= 135 || angle < -135) targetHandle = 'target-left';
+            else targetHandle = 'target-top';
+          }
+        }
+
+        const newEdge = addEdge(
+          { ...connection, sourceHandle, targetHandle, animated: config.animated, updatable: true },
+          eds,
+        );
+
+        // 通知父層保存
+        if (onEdgesChange) setTimeout(() => onEdgesChange(newEdge), 0);
+        return newEdge;
+      });
     },
-    [setEdges, config.animated]
+    [setEdges, config.animated, nodes, onEdgesChange]
   );
 
   // 節點變更處理
@@ -118,11 +166,57 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
   const handleEdgesChange = useCallback(
     (changes: any) => {
       onEdgesChangeInternal(changes);
-      if (onEdgesChange) {
-        onEdgesChange(edges);
-      }
+      // 我們會在本地同步補上缺失的 handles，避免畫面回跳
+      const nextEdges = applyEdgeChanges(changes, edges).map((e) => {
+          const sourceNode = nodes.find((n) => n.id === e.source);
+          const targetNode = nodes.find((n) => n.id === e.target);
+          const isRootSource = !!(sourceNode && (((sourceNode.data as any)?.type === 'root') || sourceNode.id === 'root'));
+
+          let sourceHandle = e.sourceHandle;
+          if (!sourceHandle) {
+            if (isRootSource) {
+              sourceHandle = getSourceHandleForRootNode(targetNode as Node);
+            } else if (sourceNode && targetNode) {
+              const dx = targetNode.position.x - sourceNode.position.x;
+              const dy = targetNode.position.y - sourceNode.position.y;
+              const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+              if (angle >= -45 && angle < 45) sourceHandle = 'source-right';
+              else if (angle >= 45 && angle < 135) sourceHandle = 'source-bottom';
+              else if (angle >= 135 || angle < -135) sourceHandle = 'source-left';
+              else sourceHandle = 'source-top';
+            } else {
+              sourceHandle = 'source';
+            }
+          }
+
+          let targetHandle = e.targetHandle;
+          if (!targetHandle) {
+            // 依方位選擇最合適的 target handle（讓目標面向來源）
+            if (sourceNode && targetNode) {
+              const dxTS = sourceNode.position.x - targetNode.position.x;
+              const dyTS = sourceNode.position.y - targetNode.position.y;
+              const angle = Math.atan2(dyTS, dxTS) * (180 / Math.PI);
+              if (angle >= -45 && angle < 45) targetHandle = 'target-right';
+              else if (angle >= 45 && angle < 135) targetHandle = 'target-bottom';
+              else if (angle >= 135 || angle < -135) targetHandle = 'target-left';
+              else targetHandle = 'target-top';
+            } else {
+              targetHandle = 'target';
+            }
+          }
+
+          return {
+            ...e,
+            sourceHandle,
+            targetHandle,
+            updatable: true,
+          } as Edge;
+        });
+      // 先同步本地，再通知父層保存
+      setEdges(nextEdges);
+      if (onEdgesChange) onEdgesChange(nextEdges);
     },
-    [onEdgesChangeInternal, onEdgesChange, edges]
+    [onEdgesChangeInternal, onEdgesChange, edges, nodes, setEdges]
   );
 
   // 右鍵選單處理
@@ -169,6 +263,166 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
     []
   );
 
+  // 雙擊連接線處理 - 開啟連接線樣式編輯器
+  const onEdgeDoubleClick = useCallback(
+    (event: React.MouseEvent, edge: Edge) => {
+      event.preventDefault();
+      setEditingEdge(edge);
+      setContextMenu(null);
+    },
+    []
+  );
+
+  // 計算根節點該使用的 source handle（依目標節點方位）
+  const getSourceHandleForRootNode = (targetNode: Node | undefined): string => {
+    if (!targetNode) return 'source-right';
+    // 找到畫布中的根節點（以 data.type 或 id 判斷）
+    const rootNode = nodes.find((n) => (n.data as any)?.type === 'root' || n.id === 'root');
+    const origin = rootNode?.position || { x: 0, y: 0 };
+    const dx = targetNode.position.x - origin.x;
+    const dy = targetNode.position.y - origin.y;
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    if (angle >= -45 && angle < 45) return 'source-right';
+    if (angle >= 45 && angle < 135) return 'source-bottom';
+    if (angle >= 135 || angle < -135) return 'source-left';
+    return 'source-top';
+  };
+
+  // 拖曳更新連接線的起點/終點（重新連接）
+  const onEdgeUpdate: OnEdgeUpdateFunc = useCallback((oldEdge, newConnection) => {
+    setEdges((eds) => {
+      const updatedEdges = eds.map((e) => {
+        if (e.id !== oldEdge.id) return e;
+
+        const nextSource = newConnection.source ?? e.source;
+        const nextTarget = newConnection.target ?? e.target;
+
+        // 計算 handle：允許任意側連接；若來源為 root，動態選擇 root handle
+        const sourceNode = nodes.find((n) => n.id === nextSource);
+        const targetNode = nodes.find((n) => n.id === nextTarget);
+        const isRootSource = sourceNode && (((sourceNode.data as any)?.type === 'root') || sourceNode.id === 'root');
+        const isRootTarget = targetNode && (((targetNode.data as any)?.type === 'root') || targetNode.id === 'root');
+        // 來源側 handle：若缺少，root 用 root 規則；非 root 依向量方向選擇 source-*
+        let nextSourceHandle = newConnection.sourceHandle as string | undefined;
+        if (!nextSourceHandle) {
+          if (isRootSource) {
+            nextSourceHandle = getSourceHandleForRootNode(targetNode);
+          } else if (sourceNode && targetNode) {
+            const dx = targetNode.position.x - sourceNode.position.x;
+            const dy = targetNode.position.y - sourceNode.position.y;
+            const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+            if (angle >= -45 && angle < 45) nextSourceHandle = 'source-right';
+            else if (angle >= 45 && angle < 135) nextSourceHandle = 'source-bottom';
+            else if (angle >= 135 || angle < -135) nextSourceHandle = 'source-left';
+            else nextSourceHandle = 'source-top';
+          } else {
+            nextSourceHandle = e.sourceHandle || 'source';
+          }
+        }
+
+        // 目標側：若有帶 targetHandle 則尊重之，否則依方位挑選（讓目標面向來源）
+        let nextTargetHandle = newConnection.targetHandle || e.targetHandle || 'target-right';
+        if (!newConnection.targetHandle) {
+          if (sourceNode && targetNode) {
+            const dxTS = sourceNode.position.x - targetNode.position.x;
+            const dyTS = sourceNode.position.y - targetNode.position.y;
+            const angle = Math.atan2(dyTS, dxTS) * (180 / Math.PI);
+            if (angle >= -45 && angle < 45) nextTargetHandle = 'target-right';
+            else if (angle >= 45 && angle < 135) nextTargetHandle = 'target-bottom';
+            else if (angle >= 135 || angle < -135) nextTargetHandle = 'target-left';
+            else nextTargetHandle = 'target-top';
+          }
+        }
+
+        return {
+          ...e,
+          source: nextSource,
+          target: nextTarget,
+          sourceHandle: nextSourceHandle,
+          targetHandle: nextTargetHandle,
+        } as Edge;
+      });
+
+      if (onEdgesChange) {
+        setTimeout(() => onEdgesChange(updatedEdges.map((e) => ({ ...e }))), 0);
+      }
+
+      return updatedEdges;
+    });
+  }, [nodes, onEdgesChange, setEdges]);
+
+  // 新 API：當邊被重新連接（來源或目標）
+  const onEdgeReconnect = useCallback((oldEdge: Edge, newConn: { connection: Connection; isSource: boolean }) => {
+    const { connection, isSource } = newConn;
+    setEdges((eds) => {
+      const updated = eds.map((e) => {
+        if (e.id !== oldEdge.id) return e;
+
+        const nextSource = isSource ? (connection.source ?? e.source) : e.source;
+        const nextTarget = !isSource ? (connection.target ?? e.target) : e.target;
+
+        const sourceNode = nodes.find((n) => n.id === nextSource);
+        const targetNode = nodes.find((n) => n.id === nextTarget);
+        const isRoot = sourceNode && ((sourceNode.data as any)?.type === 'root' || sourceNode.id === 'root');
+        // 來源把手：若未提供，root 用 root 規則；非 root 依向量方向選擇 source-*
+        let nextSourceHandle = connection.sourceHandle as string | undefined;
+        if (!nextSourceHandle) {
+          if (isRoot) {
+            nextSourceHandle = getSourceHandleForRootNode(targetNode);
+          } else if (sourceNode && targetNode) {
+            const dx = targetNode.position.x - sourceNode.position.x;
+            const dy = targetNode.position.y - sourceNode.position.y;
+            const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+            if (angle >= -45 && angle < 45) nextSourceHandle = 'source-right';
+            else if (angle >= 45 && angle < 135) nextSourceHandle = 'source-bottom';
+            else if (angle >= 135 || angle < -135) nextSourceHandle = 'source-left';
+            else nextSourceHandle = 'source-top';
+          } else {
+            nextSourceHandle = e.sourceHandle || 'source';
+          }
+        }
+
+        // 目標側 handle 依方位挑選（讓目標面向來源）
+        let nextTargetHandle = 'target-right';
+        if (targetNode) {
+          const dxTS = (sourceNode?.position.x ?? 0) - targetNode.position.x;
+          const dyTS = (sourceNode?.position.y ?? 0) - targetNode.position.y;
+          const angle = Math.atan2(dyTS, dxTS) * (180 / Math.PI);
+          if (angle >= -45 && angle < 45) nextTargetHandle = 'target-right';
+          else if (angle >= 45 && angle < 135) nextTargetHandle = 'target-bottom';
+          else if (angle >= 135 || angle < -135) nextTargetHandle = 'target-left';
+          else nextTargetHandle = 'target-top';
+        }
+
+        return {
+          ...e,
+          source: nextSource,
+          target: nextTarget,
+          sourceHandle: nextSourceHandle,
+          targetHandle: nextTargetHandle,
+        } as Edge;
+      });
+
+  if (onEdgesChange) setTimeout(() => onEdgesChange(updated.map((e) => ({ ...e }))), 0);
+      return updated;
+    });
+  }, [nodes, onEdgesChange]);
+
+  // 鍵盤刪除選取的連接線
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (selectedEdge) {
+        setEdges((eds) => {
+          const filtered = eds.filter((edge) => edge.id !== selectedEdge.id);
+          if (onEdgesChange) {
+            setTimeout(() => onEdgesChange(filtered), 0);
+          }
+          return filtered;
+        });
+      }
+    }
+  }, [selectedEdge, setEdges, onEdgesChange]);
+
   // 節點操作
   const handleAddNode = useCallback(
     (parentId: string) => {
@@ -202,11 +456,17 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
       if (onDeleteEdge) {
         onDeleteEdge(edgeId);
       } else {
-        // 本地刪除
-        setEdges((eds) => eds.filter((e) => e.id !== edgeId));
+        // 本地刪除，同步通知父層保存
+        setEdges((eds) => {
+          const filtered = eds.filter((e) => e.id !== edgeId);
+          if (onEdgesChange) {
+            setTimeout(() => onEdgesChange(filtered), 0);
+          }
+          return filtered;
+        });
       }
     },
-    [onDeleteEdge, setEdges]
+    [onDeleteEdge, setEdges, onEdgesChange]
   );
 
   const handleEditNodeStyle = useCallback((nodeId: string) => {
@@ -231,25 +491,16 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
             ? {
                 ...n,
                 data: { ...n.data, style },
-                style: {
-                  backgroundColor: style.backgroundColor,
-                  borderColor: style.borderColor,
-                  borderWidth: `${style.borderWidth}px`,
-                  color: style.textColor,
-                  fontSize: `${style.fontSize}px`,
-                  borderRadius: `${style.borderRadius}px`,
-                },
               }
             : n
         );
-        
-        // 通知父組件使用最新的節點
+
         if (onNodesChange) {
           setTimeout(() => {
             onNodesChange(updatedNodes);
           }, 0);
         }
-        
+
         return updatedNodes;
       });
       setEditingNode(null);
@@ -258,14 +509,20 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
   );
 
   const handleSaveEdgeStyle = useCallback(
-    (edgeId: string, style: any) => {
+    (edgeId: string, updates: { style: any; animated?: boolean; type?: string; markerStart?: any; markerEnd?: any }) => {
       setEdges((eds) => {
         const updatedEdges = eds.map((e) =>
           e.id === edgeId
-            ? {
-                ...e,
-                style,
-              }
+            ? (() => {
+                const next: any = { ...e, style: updates.style };
+                if (typeof updates.animated === 'boolean') next.animated = updates.animated;
+                if (updates.type) next.type = updates.type;
+                if (updates.markerStart === null) delete next.markerStart;
+                else if (updates.markerStart !== undefined) next.markerStart = updates.markerStart;
+                if (updates.markerEnd === null) delete next.markerEnd;
+                else if (updates.markerEnd !== undefined) next.markerEnd = updates.markerEnd;
+                return next as Edge;
+              })()
             : e
         );
         
@@ -285,7 +542,7 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
 
   // 處理節點完整編輯（文字+樣式）
   const handleSaveNodeEdit = useCallback(
-    (nodeId: string, updates: { label?: string; description?: string; style?: any }) => {
+    (nodeId: string, updates: { label?: string; description?: string; style?: any; type?: 'branch' | 'leaf' | 'root' }) => {
       console.log('🔧 Saving node edit:', { nodeId, updates });
       
       setNodes((nds) => {
@@ -313,28 +570,22 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
             console.log('📝 Updated description:', updates.description);
           }
 
+          // 更新類型
+          if (updates.type) {
+            updatedNode.data.type = updates.type;
+          }
+
           // 更新樣式
           if (updates.style) {
             updatedNode.data.style = updates.style;
-            updatedNode.style = {
-              ...updatedNode.style,
-              backgroundColor: updates.style.backgroundColor,
-              borderColor: updates.style.borderColor,
-              borderWidth: `${updates.style.borderWidth}px`,
-              borderStyle: 'solid',
-              color: updates.style.textColor,
-              fontSize: `${updates.style.fontSize}px`,
-              borderRadius: `${updates.style.borderRadius}px`,
-              fontWeight: updates.style.fontWeight,
-            };
-            console.log('🎨 Updated style:', updatedNode.style);
+            console.log('🎨 Updated style (data only)');
           }
 
           console.log('✅ Updated node:', updatedNode);
           return updatedNode;
         });
 
-        // 通知父組件
+        // 通知父組件（自動儲存）
         if (onNodesChange) {
           setTimeout(() => {
             console.log('📤 Notifying parent with updated nodes');
@@ -350,13 +601,15 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
   );
 
   return (
-    <div className="mindmap-canvas">
+  <div className="mindmap-canvas" tabIndex={0} onKeyDown={handleKeyDown}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={handleNodesChange}
         onEdgesChange={handleEdgesChange}
         onConnect={onConnect}
+  onEdgeUpdate={onEdgeUpdate}
+        onEdgeDoubleClick={onEdgeDoubleClick}
         onNodeContextMenu={onNodeContextMenu}
         onEdgeContextMenu={onEdgeContextMenu}
         onPaneContextMenu={onPaneContextMenu}
@@ -364,7 +617,8 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
         nodeTypes={nodeTypes}
         connectionMode={ConnectionMode.Loose}
         nodesDraggable={true}
-        nodesConnectable={false}
+  nodesConnectable={true}
+        edgesUpdatable={true}
         elementsSelectable={true}
         fitView
         fitViewOptions={{ padding: 0.2 }}

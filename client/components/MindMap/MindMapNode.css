@@ -3,7 +3,8 @@
 .mindmap-node {
   padding: 12px 20px;
   border-radius: 8px;
-  border: 2px solid;
+  /* 邊框由 inline style 控制，避免與這裡重疊造成雙層邊框 */
+  border: none;
   background: white;
   min-width: 120px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -17,28 +18,11 @@
 
 /* 根節點樣式 */
 .mindmap-node-root {
-  border-color: #6366f1;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: white;
-  font-weight: bold;
-  font-size: 16px;
+  /* 類型樣式主要在 inline style，這裡僅做最小化調整 */
   min-width: 160px;
 }
 
-/* 分支節點樣式 */
-.mindmap-node-branch {
-  border-color: #10b981;
-  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
-  color: #065f46;
-}
-
-/* 葉節點樣式 */
-.mindmap-node-leaf {
-  border-color: #f59e0b;
-  background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
-  color: #92400e;
-  font-size: 14px;
-}
+/* 分支與葉節點樣式由 inline style 控制 */
 
 .mindmap-node-content {
   display: flex;
@@ -73,8 +57,31 @@
   background: #4f46e5;
 }
 
+/* 區分 target 和 source handle */
+.mindmap-handle-target {
+  background: #10b981;
+}
+
+.mindmap-handle-target:hover {
+  background: #059669;
+}
+
+.mindmap-handle-source {
+  background: #f59e0b;
+}
+
+.mindmap-handle-source:hover {
+  background: #d97706;
+}
+
+/* 隱藏相容性 fallback handle */
+.mindmap-handle-fallback {
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* 選中狀態 */
 .react-flow__node.selected .mindmap-node {
-  border-width: 3px;
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+  /* 使用外光暈表示選中狀態，避免改變邊框寬度造成跳動 */
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25), 0 2px 10px rgba(0,0,0,0.12);
 }

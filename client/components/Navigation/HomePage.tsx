@@ -13,7 +13,7 @@ interface MindMapItem {
   nodeCount: number;
 }
 
-const API_BASE_URL = 'http://localhost:3020/api';
+const API_BASE_URL = '/api';
 
 const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap }) => {
   const [recentMindMaps, setRecentMindMaps] = useState<MindMapItem[]>([]);
@@ -76,6 +76,22 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap }) => {
         <div className="nav-item">
           <span className="nav-icon">📊</span>
           <span className="nav-label">專案</span>
+        </div>
+        <div className="nav-item" onClick={() => onNavigate('tree-demo')}>
+          <span className="nav-icon">🌿</span>
+          <span className="nav-label">樹枝圖</span>
+        </div>
+        <div className="nav-item" onClick={() => onNavigate('tree-ui-layout')}>
+          <span className="nav-icon">🗂️</span>
+          <span className="nav-label">UI 樹枝圖</span>
+        </div>
+        <div className="nav-item" onClick={() => onNavigate('tree-ui-layout-rich')}>
+          <span className="nav-icon">🧾</span>
+          <span className="nav-label">UI 樹枝圖(完整資訊)</span>
+        </div>
+        <div className="nav-item" onClick={() => onNavigate('tree-psd-structure')}>
+          <span className="nav-icon">🧩</span>
+          <span className="nav-label">PSD 全結構樹</span>
         </div>
         <div className="nav-item">
           <span className="nav-icon">⚙️</span>

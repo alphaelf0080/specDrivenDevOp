@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Edge } from 'reactflow';
+import { Edge, MarkerType } from 'reactflow';
 import './StyleEditor.css';
 
 export interface EdgeStyleEditorProps {
   edge: Edge;
-  onSave: (edgeId: string, style: any) => void;
+  onSave: (edgeId: string, updates: { style: any; animated?: boolean; type?: string; markerStart?: any; markerEnd?: any }) => void;
   onClose: () => void;
 }
 
@@ -29,12 +29,28 @@ const EdgeStyleEditor: React.FC<EdgeStyleEditorProps> = ({ edge, onSave, onClose
   const [edgeType, setEdgeType] = useState(
     edge.type || 'default'
   );
+  const [startArrow, setStartArrow] = useState(
+    !!(edge as any).markerStart
+  );
+  const [endArrow, setEndArrow] = useState(
+    !!(edge as any).markerEnd
+  );
 
   const handleSave = () => {
     onSave(edge.id, {
-      stroke: strokeColor,
-      strokeWidth: Number(strokeWidth),
-      strokeDasharray: strokeDasharray || undefined,
+      style: {
+        stroke: strokeColor,
+        strokeWidth: Number(strokeWidth),
+        strokeDasharray: strokeDasharray || undefined,
+      },
+      animated,
+      type: edgeType,
+      markerStart: startArrow
+        ? { type: MarkerType.ArrowClosed, color: strokeColor }
+        : null,
+      markerEnd: endArrow
+        ? { type: MarkerType.ArrowClosed, color: strokeColor }
+        : null,
     });
   };
 
@@ -66,20 +82,27 @@ const EdgeStyleEditor: React.FC<EdgeStyleEditorProps> = ({ edge, onSave, onClose
           <div className="style-editor-section">
             <label className="style-editor-label">預覽</label>
             <svg className="style-editor-edge-preview" width="100%" height="60">
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill={strokeColor} />
+                </marker>
+              </defs>
               <line
-                x1="20"
+                x1="40"
                 y1="30"
-                x2="280"
+                x2="260"
                 y2="30"
                 stroke={strokeColor}
                 strokeWidth={strokeWidth}
                 strokeDasharray={strokeDasharray}
+                markerStart={startArrow ? 'url(#arrow)' : undefined}
+                markerEnd={endArrow ? 'url(#arrow)' : undefined}
               />
               {animated && (
                 <line
-                  x1="20"
+                  x1="40"
                   y1="30"
-                  x2="280"
+                  x2="260"
                   y2="30"
                   stroke={strokeColor}
                   strokeWidth={strokeWidth}
@@ -165,6 +188,26 @@ const EdgeStyleEditor: React.FC<EdgeStyleEditorProps> = ({ edge, onSave, onClose
                 onChange={(e) => setAnimated(e.target.checked)}
               />
               <span>啟用動畫效果</span>
+            </label>
+          </div>
+
+          {/* 箭頭設定 */}
+          <div className="style-editor-section">
+            <label className="style-editor-checkbox" style={{ marginRight: 16 }}>
+              <input
+                type="checkbox"
+                checked={startArrow}
+                onChange={(e) => setStartArrow(e.target.checked)}
+              />
+              <span>起點箭頭</span>
+            </label>
+            <label className="style-editor-checkbox">
+              <input
+                type="checkbox"
+                checked={endArrow}
+                onChange={(e) => setEndArrow(e.target.checked)}
+              />
+              <span>終點箭頭</span>
             </label>
           </div>
         </div>

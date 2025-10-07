@@ -1,6 +1,6 @@
 {
   "name": "spec-driven-slot-game",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "license": "MIT",
@@ -17,7 +17,11 @@
     "format": "prettier --write .",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "log:request": "node scripts/log-request.js"
+    "log:request": "node scripts/log-request.js",
+  "psd:generate": "node scripts/generate-psd-manifest.js",
+    "mindmap:rebalance": "tsx scripts/rebalance-mindmap.ts",
+    "mindmap:check-handles": "tsx scripts/check-edge-handles.ts",
+    "mindmap:migrate-handles": "tsx scripts/migrate-add-edge-handles.ts"
   },
   "dependencies": {
     "@types/dagre": "^0.7.53",

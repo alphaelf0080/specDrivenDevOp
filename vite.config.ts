@@ -8,13 +8,13 @@ export default defineConfig({
   
   // 開發伺服器配置
   server: {
-    port: 3030,
+    port: 5030,
     host: true,
     open: true,
     proxy: {
       // 代理 API 請求到後端伺服器
       '/api': {
-        target: 'http://localhost:3020',
+        target: 'http://localhost:5010',
         changeOrigin: true,
         secure: false,
       },
@@ -23,7 +23,7 @@ export default defineConfig({
 
   // 預覽伺服器配置
   preview: {
-    port: 3030,
+    port: 5030,
     host: true,
   },
 

@@ -4,7 +4,7 @@ import './NodeEditor.css';
 
 export interface NodeEditorProps {
   node: Node;
-  onSave: (nodeId: string, updates: { label?: string; description?: string; style?: any }) => void;
+  onSave: (nodeId: string, updates: { label?: string; description?: string; style?: any; type?: 'branch' | 'leaf' | 'root' }) => void;
   onClose: () => void;
 }
 
@@ -13,6 +13,8 @@ export interface NodeEditorProps {
  */
 const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose }) => {
   const currentStyle = node.data.style || {};
+  const currentType: 'branch' | 'leaf' | 'root' = (node.data.type as any) || 'branch';
+  const isRoot = currentType === 'root';
   
   // 文字內容
   const [label, setLabel] = useState(node.data.label || '');
@@ -46,6 +48,7 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose }) => {
   const [fontWeight, setFontWeight] = useState(
     currentStyle.fontWeight || (node.data.type === 'root' ? 'bold' : 'normal')
   );
+  const [type, setType] = useState<'branch' | 'leaf' | 'root'>(currentType);
 
   const handleSave = () => {
     onSave(node.id, {
@@ -60,6 +63,7 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose }) => {
         borderRadius: Number(borderRadius),
         fontWeight,
       },
+      type: isRoot ? undefined : type,
     });
   };
 
@@ -164,6 +168,21 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose }) => {
           {/* 樣式設定 */}
           <div className="node-editor-section">
             <label className="node-editor-label">樣式設定</label>
+            {!isRoot && (
+              <div className="node-editor-row">
+                <div className="node-editor-field">
+                  <label className="node-editor-sublabel">節點類型</label>
+                  <select
+                    value={type}
+                    onChange={(e) => setType(e.target.value as any)}
+                    className="node-editor-select"
+                  >
+                    <option value="branch">分支（branch）</option>
+                    <option value="leaf">葉節點（leaf）</option>
+                  </select>
+                </div>
+              </div>
+            )}
             
             <div className="node-editor-row">
               <div className="node-editor-field">

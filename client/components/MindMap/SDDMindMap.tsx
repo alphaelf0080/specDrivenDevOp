@@ -6,7 +6,7 @@ import { sddMindMapData } from '../../data/sdd-mindmap-data';
 import './SDDMindMap.css';
 
 // API 基礎 URL
-const API_BASE_URL = 'http://localhost:3020/api';
+const API_BASE_URL = '/api';
 const DEFAULT_MINDMAP_ID = 'sdd-mindmap';
 
 // 固定的 config，避免每次渲染都創建新對象
@@ -29,6 +29,8 @@ const SDDMindMap: React.FC = () => {
     initializeData,
     addNode,
     deleteNode,
+    syncNodes,
+    syncEdges,
   } = useMindMap(undefined, MINDMAP_CONFIG);
 
   const [stats, setStats] = useState({
@@ -53,18 +55,11 @@ const SDDMindMap: React.FC = () => {
         const response = await fetch(`${API_BASE_URL}/mindmap/layout/${currentMindMapId}`);
         const data = await response.json();
         
-        if (data.success && data.layout && Object.keys(data.layout).length > 0) {
-          console.log('📍 Loading saved layout from server:', Object.keys(data.layout).length, 'nodes');
-          
-          // 將保存的位置應用到節點
-          const nodesWithPositions = sddMindMapData.nodes.map(node => ({
-            ...node,
-            position: data.layout[node.id] || { x: 0, y: 0 }
-          }));
-          
+        if (data.success && data.layout && (data.layout.nodes?.length || 0) > 0) {
+          console.log('📍 Loading saved layout from server:', data.layout.nodes.length, 'nodes');
           initializeData({
-            ...sddMindMapData,
-            nodes: nodesWithPositions
+            nodes: data.layout.nodes,
+            edges: data.layout.edges || sddMindMapData.edges,
           });
         } else {
           // 沒有保存的布局，使用預設
@@ -102,18 +97,11 @@ const SDDMindMap: React.FC = () => {
       const response = await fetch(`${API_BASE_URL}/mindmap/layout/${id}`);
       const data = await response.json();
       
-      if (data.success && data.layout && Object.keys(data.layout).length > 0) {
+      if (data.success && data.layout && (data.layout.nodes?.length || 0) > 0) {
         console.log('📍 Loading layout for:', name);
-        
-        // 將保存的位置應用到節點
-        const nodesWithPositions = sddMindMapData.nodes.map(node => ({
-          ...node,
-          position: data.layout[node.id] || { x: 0, y: 0 }
-        }));
-        
         initializeData({
-          ...sddMindMapData,
-          nodes: nodesWithPositions
+          nodes: data.layout.nodes,
+          edges: data.layout.edges || sddMindMapData.edges,
         });
       } else {
         // 沒有布局資料，使用預設
@@ -146,22 +134,19 @@ const SDDMindMap: React.FC = () => {
 
   // 處理節點位置變更並保存到後端
   const handleNodesChange = async (updatedNodes: any[]) => {
-    // 提取節點位置
-    const positions = updatedNodes.reduce((acc, node) => {
-      if (node.position) {
-        acc[node.id] = node.position;
-      }
-      return acc;
-    }, {} as Record<string, { x: number; y: number }>);
-    
+    // 保持本地 hook 狀態同步，避免重掛載時樣式遺失
+    syncNodes(updatedNodes);
     try {
-      // 保存到後端
+      // 保存完整節點與邊到後端（包含樣式與類型等 data）
       const response = await fetch(`${API_BASE_URL}/mindmap/layout/${currentMindMapId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ layout: positions }),
+        body: JSON.stringify({ layout: { 
+          nodes: updatedNodes.map((n) => ({ ...n.data, position: n.position })), 
+          edges: edges.map((e) => ({ ...e, sourceHandle: (e as any).sourceHandle, targetHandle: (e as any).targetHandle })) 
+        } }),
       });
       
       const data = await response.json();
@@ -173,19 +158,44 @@ const SDDMindMap: React.FC = () => {
     }
   };
 
+  const handleEdgesChange = async (updatedEdges: any[]) => {
+    // 同步 hook 狀態
+    syncEdges(updatedEdges);
+    try {
+      const payload = {
+        nodes: nodes.map((n) => ({ ...n.data, position: n.position })),
+        edges: updatedEdges.map((e) => ({
+          ...e,
+          sourceHandle: e.sourceHandle,
+          targetHandle: e.targetHandle,
+        })),
+      };
+      const response = await fetch(`${API_BASE_URL}/mindmap/layout/${currentMindMapId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ layout: payload }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        console.log('✅ Edges saved to server');
+      }
+    } catch (error) {
+      console.error('❌ Failed to save edges to server:', error);
+    }
+  };
+
   const handleSaveLayout = async () => {
-    const positions = nodes.reduce((acc, node) => {
-      acc[node.id] = node.position;
-      return acc;
-    }, {} as Record<string, { x: number; y: number }>);
-    
+    const payload = { 
+      nodes: nodes.map((n) => ({ ...n.data, position: n.position })), 
+      edges: edges.map((e) => ({ ...e, sourceHandle: (e as any).sourceHandle, targetHandle: (e as any).targetHandle }))
+    };
     try {
       const response = await fetch(`${API_BASE_URL}/mindmap/layout/${currentMindMapId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ layout: positions }),
+        body: JSON.stringify({ layout: payload }),
       });
       
       const data = await response.json();
@@ -255,6 +265,7 @@ const SDDMindMap: React.FC = () => {
             nodesDraggable: true,
           }}
           onNodesChange={handleNodesChange}
+          onEdgesChange={handleEdgesChange}
           onAddNode={(parentId, nodeData) => {
             console.log('🆕 Adding new node to parent:', parentId);
             addNode(parentId, nodeData, (updatedNodes) => {
