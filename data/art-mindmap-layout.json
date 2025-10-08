@@ -1,0 +1,1180 @@
+{
+  "nodes": [
+    {
+      "id": "art-root",
+      "label": "SDD 美術開發方案與執行計畫",
+      "type": "root",
+      "position": {
+        "x": -49.13078065722497,
+        "y": 4107.5378729071845
+      }
+    },
+    {
+      "id": "principles",
+      "label": "目標與原則",
+      "type": "branch",
+      "position": {
+        "x": -335.6245842277085,
+        "y": 2978.523741383222
+      }
+    },
+    {
+      "id": "principles-ssot",
+      "label": "SSOT：規格為中心",
+      "type": "leaf",
+      "position": {
+        "x": -632.6924133535081,
+        "y": 2856.1861803770284
+      },
+      "data": {
+        "description": ""
+      }
+    },
+    {
+      "id": "principles-deterministic",
+      "label": "確定性與可重現",
+      "type": "leaf",
+      "position": {
+        "x": -613.4201770647132,
+        "y": 2922.863118285274
+      }
+    },
+    {
+      "id": "principles-automation",
+      "label": "自動化優先",
+      "type": "leaf",
+      "position": {
+        "x": -593.4596466227472,
+        "y": 2986.0985854276632
+      }
+    },
+    {
+      "id": "principles-shift-left",
+      "label": "左移質量（Week 0）",
+      "type": "leaf",
+      "position": {
+        "x": -647.1465905701043,
+        "y": 3049.3340525700532
+      }
+    },
+    {
+      "id": "principles-audit",
+      "label": "可審計（版本/報告）",
+      "type": "leaf",
+      "position": {
+        "x": -651.2368430675103,
+        "y": 3115.7596419976885
+      }
+    },
+    {
+      "id": "principles-kpi",
+      "label": "KPI：命名/尺寸/壓縮/首屏/FPS",
+      "type": "leaf",
+      "position": {
+        "x": -713.5617581935564,
+        "y": 3186.78766185824
+      }
+    },
+    {
+      "id": "contract",
+      "label": "輸入與輸出（Contract）",
+      "type": "branch",
+      "position": {
+        "x": 368.10813926455705,
+        "y": 3223.516255281019
+      }
+    },
+    {
+      "id": "inputs",
+      "label": "Inputs：規格/PSD 結構/資產規範",
+      "type": "leaf",
+      "position": {
+        "x": 657.8433223145786,
+        "y": 3085.708881848701
+      }
+    },
+    {
+      "id": "outputs",
+      "label": "Outputs：manifest/圖像/音訊/報告",
+      "type": "leaf",
+      "position": {
+        "x": 659.2332469771063,
+        "y": 3166.238201314749
+      }
+    },
+    {
+      "id": "manifest-fields",
+      "label": "manifest 欄位建議",
+      "type": "leaf",
+      "position": {
+        "x": 661.3092331819608,
+        "y": 3253.3062021156184
+      }
+    },
+    {
+      "id": "naming",
+      "label": "命名與尺寸/格式",
+      "type": "branch",
+      "position": {
+        "x": 363.52275176637187,
+        "y": 3577.5683666094083
+      }
+    },
+    {
+      "id": "naming-categories",
+      "label": "類別：bg/sym/btn/tx/icon/num/line",
+      "type": "leaf",
+      "position": {
+        "x": 635.5227517663718,
+        "y": 3382.910181965169
+      }
+    },
+    {
+      "id": "naming-symbol",
+      "label": "符號：240×240（10% 留白）",
+      "type": "leaf",
+      "position": {
+        "x": 632,
+        "y": 3440.693770754545
+      }
+    },
+    {
+      "id": "naming-bg",
+      "label": "背景：1080×1920 JPG Q85-90",
+      "type": "leaf",
+      "position": {
+        "x": 630.238624116814,
+        "y": 3491.431856011177
+      }
+    },
+    {
+      "id": "naming-button",
+      "label": "按鈕四態：≥ 88×88",
+      "type": "leaf",
+      "position": {
+        "x": 630.238624116814,
+        "y": 3549.2154448005526
+      }
+    },
+    {
+      "id": "naming-compress",
+      "label": "壓縮：pngquant/mozjpeg/WebP",
+      "type": "leaf",
+      "position": {
+        "x": 630.2386241168141,
+        "y": 3614.0445371226724
+      }
+    },
+    {
+      "id": "naming-audio",
+      "label": "音訊：MP3 192kbps / OGG 128kbps",
+      "type": "leaf",
+      "position": {
+        "x": 628.4772482336281,
+        "y": 3682.396381211164
+      }
+    },
+    {
+      "id": "psd",
+      "label": "PSD 結構與切圖",
+      "type": "branch",
+      "position": {
+        "x": -360,
+        "y": 3869.6434656523907
+      }
+    },
+    {
+      "id": "psd-groups",
+      "label": "分組：MG/FG/Popup 與資產類別",
+      "type": "leaf",
+      "position": {
+        "x": -855.8489503454169,
+        "y": 3852.0532344183102
+      }
+    },
+    {
+      "id": "psd-states",
+      "label": "按鈕四態成組：up/hover/down/disable",
+      "type": "leaf",
+      "position": {
+        "x": -904.7364930914159,
+        "y": 3692.8498793132544
+      }
+    },
+    {
+      "id": "psd-i18n",
+      "label": "多語文字圖：tx_*_{lang}",
+      "type": "leaf",
+      "position": {
+        "x": -793.0655476013351,
+        "y": 3770.2672957536233
+      }
+    },
+    {
+      "id": "psd-export",
+      "label": "切圖原則：透明=PNG、大圖=JPG/WebP",
+      "type": "leaf",
+      "position": {
+        "x": -908.8969619766173,
+        "y": 3970.882112240072
+      }
+    },
+    {
+      "id": "psd-structure-json",
+      "label": "psd_structure.json 自動化",
+      "type": "leaf",
+      "position": {
+        "x": -851.3742551519784,
+        "y": 4072.120758827752
+      }
+    },
+    {
+      "id": "workflow",
+      "label": "工作流程（端到端）",
+      "type": "branch",
+      "position": {
+        "x": 311.28410338560576,
+        "y": 3933.3733406885335
+      }
+    },
+    {
+      "id": "wf-spec-list",
+      "label": "1) 規格驅動資產清單",
+      "type": "leaf",
+      "position": {
+        "x": 627.5397670773381,
+        "y": 3814.144777996847
+      }
+    },
+    {
+      "id": "wf-design-export",
+      "label": "2) 視覺設計與導出",
+      "type": "leaf",
+      "position": {
+        "x": 624.9281153874497,
+        "y": 3876.2418340597496
+      }
+    },
+    {
+      "id": "wf-check-fix",
+      "label": "3) 檢查與修正（自動化）",
+      "type": "leaf",
+      "position": {
+        "x": 627.5397670773382,
+        "y": 3933.9861373061713
+      }
+    },
+    {
+      "id": "wf-integration",
+      "label": "4) 整合與載入策略",
+      "type": "leaf",
+      "position": {
+        "x": 628.4103176406343,
+        "y": 3995.2126428057773
+      }
+    },
+    {
+      "id": "wf-versioning",
+      "label": "5) 版本與審計（diff/Changelog）",
+      "type": "leaf",
+      "position": {
+        "x": 628.4103176406343,
+        "y": 4061.66245168516
+      }
+    },
+    {
+      "id": "plan",
+      "label": "執行計畫（8 週）",
+      "type": "branch",
+      "position": {
+        "x": -363.98458781677925,
+        "y": 4551.55841444347
+      }
+    },
+    {
+      "id": "wk0",
+      "label": "Week 0：前置/骨架/基線",
+      "type": "leaf",
+      "position": {
+        "x": -731.3735904325654,
+        "y": 4581.5197313375575
+      }
+    },
+    {
+      "id": "wk1-2",
+      "label": "Week 1–2：規格 v1/風格定稿",
+      "type": "leaf",
+      "position": {
+        "x": -750.1176506022937,
+        "y": 4695.876088872449
+      }
+    },
+    {
+      "id": "wk3-4",
+      "label": "Week 3–4：原型可視化/回放",
+      "type": "leaf",
+      "position": {
+        "x": -753.310206521353,
+        "y": 4457.626555795383
+      }
+    },
+    {
+      "id": "wk5",
+      "label": "Week 5：內容整備/零高風險",
+      "type": "leaf",
+      "position": {
+        "x": -751.7907962325778,
+        "y": 4519.420271331662
+      }
+    },
+    {
+      "id": "wk6",
+      "label": "Week 6：數值平衡/凍結視覺",
+      "type": "leaf",
+      "position": {
+        "x": -744.3994953199866,
+        "y": 4634.906022223964
+      }
+    },
+    {
+      "id": "wk7",
+      "label": "Week 7：整合測試/性能回歸",
+      "type": "leaf",
+      "position": {
+        "x": -750.7569326251947,
+        "y": 4757.236488208535
+      }
+    },
+    {
+      "id": "wk8",
+      "label": "Week 8：合規/上線/回放",
+      "type": "leaf",
+      "position": {
+        "x": -731.1914308465067,
+        "y": 4816.406022223963
+      }
+    },
+    {
+      "id": "raci",
+      "label": "RACI 與角色",
+      "type": "branch",
+      "position": {
+        "x": 345.146137707459,
+        "y": 4247.757683015825
+      },
+      "data": {
+        "description": ""
+      }
+    },
+    {
+      "id": "raci-art",
+      "label": "Art（R）設計/導出/修正",
+      "type": "leaf",
+      "position": {
+        "x": 625.3982834255373,
+        "y": 4167.0211962709445
+      }
+    },
+    {
+      "id": "raci-asset",
+      "label": "Asset Agent（A/R）清單/校驗/報告",
+      "type": "leaf",
+      "position": {
+        "x": 624.5730688537295,
+        "y": 4236.780532528972
+      }
+    },
+    {
+      "id": "raci-fe",
+      "label": "FE（C）載入與性能",
+      "type": "leaf",
+      "position": {
+        "x": 624.5730688537294,
+        "y": 4300.763366784345
+      }
+    },
+    {
+      "id": "raci-qa",
+      "label": "QA（C/A）檢查/E2E/回放",
+      "type": "leaf",
+      "position": {
+        "x": 626.2234979973452,
+        "y": 4365.571415611526
+      }
+    },
+    {
+      "id": "raci-tl",
+      "label": "Tech Lead（A）變更守門",
+      "type": "leaf",
+      "position": {
+        "x": 628.6991417127687,
+        "y": 4428.729035295092
+      }
+    },
+    {
+      "id": "raci-cadence",
+      "label": "節奏：日站會/週審查",
+      "type": "leaf",
+      "position": {
+        "x": 628.6991417127686,
+        "y": 4491.886654978657
+      }
+    },
+    {
+      "id": "change",
+      "label": "變更管理（RFC）",
+      "type": "branch",
+      "position": {
+        "x": -360,
+        "y": 5196.741561729845
+      }
+    },
+    {
+      "id": "change-stages",
+      "label": "三階段：提案→實作→審查",
+      "type": "leaf",
+      "position": {
+        "x": -660.1722530316763,
+        "y": 5137.952580196884
+      }
+    },
+    {
+      "id": "change-major",
+      "label": "重大變更：新符號/尺寸/RTP>5%",
+      "type": "leaf",
+      "position": {
+        "x": -701.5740079543737,
+        "y": 5203.365842517476
+      }
+    },
+    {
+      "id": "change-attachments",
+      "label": "附件：差異/檢查/影響/回滾",
+      "type": "leaf",
+      "position": {
+        "x": -666.7965338193079,
+        "y": 5293.620157791686
+      }
+    },
+    {
+      "id": "quality",
+      "label": "品質門（Quality Gates）",
+      "type": "branch",
+      "position": {
+        "x": 309.6031580042051,
+        "y": 4751.929759964692
+      }
+    },
+    {
+      "id": "quality-naming",
+      "label": "命名/結構 規則通過",
+      "type": "leaf",
+      "position": {
+        "x": 629.4801579002102,
+        "y": 4615.4020228543895
+      }
+    },
+    {
+      "id": "quality-size",
+      "label": "尺寸/格式 與標準一致",
+      "type": "leaf",
+      "position": {
+        "x": 637.0396841995795,
+        "y": 4691.22541770891
+      }
+    },
+    {
+      "id": "quality-compress",
+      "label": "壓縮/體積 達標",
+      "type": "leaf",
+      "position": {
+        "x": 647.1190525987386,
+        "y": 4760.749207313956
+      }
+    },
+    {
+      "id": "quality-script",
+      "label": "腳本檢查：check-assets 綠燈",
+      "type": "leaf",
+      "position": {
+        "x": 647.1190525987384,
+        "y": 4834.0527600686855
+      }
+    },
+    {
+      "id": "quality-dod",
+      "label": "DoD 對應條款達成",
+      "type": "leaf",
+      "position": {
+        "x": 653.4186578482128,
+        "y": 4913.655918072891
+      }
+    },
+    {
+      "id": "risks",
+      "label": "風險與緩解",
+      "type": "branch",
+      "position": {
+        "x": -343.5942993990624,
+        "y": 5661.288711429376
+      }
+    },
+    {
+      "id": "risk-missing",
+      "label": "缺漏/延誤：缺漏清單+追蹤",
+      "type": "leaf",
+      "position": {
+        "x": -654.3760073424987,
+        "y": 5528.143316652542
+      }
+    },
+    {
+      "id": "risk-size",
+      "label": "體積過大：WebP/合圖/lazy",
+      "type": "leaf",
+      "position": {
+        "x": -652.7199371455908,
+        "y": 5620.881737222114
+      }
+    },
+    {
+      "id": "risk-i18n",
+      "label": "多語爆量：字渲染優先",
+      "type": "leaf",
+      "position": {
+        "x": -617.9424630105252,
+        "y": 5705.339806807147
+      }
+    },
+    {
+      "id": "risk-changes",
+      "label": "變更頻繁：RFC+凍結窗口",
+      "type": "leaf",
+      "position": {
+        "x": -636.1592351765119,
+        "y": 5786.485735998364
+      }
+    },
+    {
+      "id": "checklists",
+      "label": "落地清單（Checklists）",
+      "type": "branch",
+      "position": {
+        "x": 339.42854709234837,
+        "y": 5111.3854083735505
+      }
+    },
+    {
+      "id": "list-pre",
+      "label": "出圖前：PSD/尺寸/四態/多語",
+      "type": "leaf",
+      "position": {
+        "x": 642.2857264538258,
+        "y": 5012.242587735029
+      }
+    },
+    {
+      "id": "list-export",
+      "label": "導出後：命名/透明/壓縮",
+      "type": "leaf",
+      "position": {
+        "x": 642.2857264538258,
+        "y": 5087.3853799812905
+      }
+    },
+    {
+      "id": "list-integrate",
+      "label": "整合前：manifest/報告/載入",
+      "type": "leaf",
+      "position": {
+        "x": 642.2857264538259,
+        "y": 5174.528186423683
+      }
+    },
+    {
+      "id": "verify",
+      "label": "運行與驗證指引",
+      "type": "branch",
+      "position": {
+        "x": -360,
+        "y": 6101.741561729845
+      }
+    },
+    {
+      "id": "verify-check-assets",
+      "label": "check-assets：產出報告",
+      "type": "leaf",
+      "position": {
+        "x": -614.6303226167093,
+        "y": 6057.442439191193
+      }
+    },
+    {
+      "id": "verify-smoke",
+      "label": "FE 煙霧測試：spin demo",
+      "type": "leaf",
+      "position": {
+        "x": -621.2546034043409,
+        "y": 6140.244438579319
+      }
+    },
+    {
+      "id": "next",
+      "label": "後續擴充",
+      "type": "branch",
+      "position": {
+        "x": 344.5714103192613,
+        "y": 5450.670950277686
+      }
+    },
+    {
+      "id": "next-manifest",
+      "label": "自動生成 manifest",
+      "type": "leaf",
+      "position": {
+        "x": 644.0000141961301,
+        "y": 5303.671007062206
+      }
+    },
+    {
+      "id": "next-webp",
+      "label": "WebP 轉換與門檻",
+      "type": "leaf",
+      "position": {
+        "x": 645.7143019384343,
+        "y": 5387.38523801999
+      }
+    },
+    {
+      "id": "next-jsx",
+      "label": "Photoshop JSX 切圖",
+      "type": "leaf",
+      "position": {
+        "x": 647.4285896807387,
+        "y": 5472.813756720078
+      }
+    },
+    {
+      "id": "next-dashboard",
+      "label": "多語覆蓋率儀表板",
+      "type": "leaf",
+      "position": {
+        "x": 645.7143019384343,
+        "y": 5551.38512445095
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "art-root",
+      "target": "change",
+      "id": "edge-7",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-bottom"
+    },
+    {
+      "source": "art-root",
+      "target": "quality",
+      "id": "edge-8",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-bottom"
+    },
+    {
+      "source": "art-root",
+      "target": "risks",
+      "id": "edge-9",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-bottom"
+    },
+    {
+      "source": "art-root",
+      "target": "checklists",
+      "id": "edge-10",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-bottom"
+    },
+    {
+      "source": "art-root",
+      "target": "verify",
+      "id": "edge-11",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-bottom"
+    },
+    {
+      "source": "art-root",
+      "target": "next",
+      "id": "edge-12",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-bottom"
+    },
+    {
+      "source": "principles",
+      "target": "principles-ssot",
+      "id": "edge-13",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "principles",
+      "target": "principles-deterministic",
+      "id": "edge-14",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "principles",
+      "target": "principles-automation",
+      "id": "edge-15",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "principles",
+      "target": "principles-shift-left",
+      "id": "edge-16",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "principles",
+      "target": "principles-audit",
+      "id": "edge-17",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "principles",
+      "target": "principles-kpi",
+      "id": "edge-18",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "contract",
+      "target": "manifest-fields",
+      "id": "edge-21",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "naming",
+      "target": "naming-categories",
+      "id": "edge-22",
+      "sourceHandle": "source-top",
+      "targetHandle": "target-top"
+    },
+    {
+      "source": "naming",
+      "target": "naming-symbol",
+      "id": "edge-23",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "naming",
+      "target": "naming-bg",
+      "id": "edge-24",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "naming",
+      "target": "naming-button",
+      "id": "edge-25",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "naming",
+      "target": "naming-compress",
+      "id": "edge-26",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "naming",
+      "target": "naming-audio",
+      "id": "edge-27",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-bottom"
+    },
+    {
+      "source": "psd",
+      "target": "psd-groups",
+      "id": "edge-28",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "psd",
+      "target": "psd-states",
+      "id": "edge-29",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "psd",
+      "target": "psd-i18n",
+      "id": "edge-30",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "psd",
+      "target": "psd-export",
+      "id": "edge-31",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "psd",
+      "target": "psd-structure-json",
+      "id": "edge-32",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "workflow",
+      "target": "wf-spec-list",
+      "id": "edge-33",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "workflow",
+      "target": "wf-design-export",
+      "id": "edge-34",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "workflow",
+      "target": "wf-check-fix",
+      "id": "edge-35",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "workflow",
+      "target": "wf-integration",
+      "id": "edge-36",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "workflow",
+      "target": "wf-versioning",
+      "id": "edge-37",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "plan",
+      "target": "wk0",
+      "id": "edge-38",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "plan",
+      "target": "wk1-2",
+      "id": "edge-39",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "plan",
+      "target": "wk3-4",
+      "id": "edge-40",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "plan",
+      "target": "wk5",
+      "id": "edge-41",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "plan",
+      "target": "wk6",
+      "id": "edge-42",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "plan",
+      "target": "wk7",
+      "id": "edge-43",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "plan",
+      "target": "wk8",
+      "id": "edge-44",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "raci",
+      "target": "raci-art",
+      "id": "edge-45",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "raci",
+      "target": "raci-asset",
+      "id": "edge-46",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "raci",
+      "target": "raci-fe",
+      "id": "edge-47",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "raci",
+      "target": "raci-qa",
+      "id": "edge-48",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "raci",
+      "target": "raci-tl",
+      "id": "edge-49",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "raci",
+      "target": "raci-cadence",
+      "id": "edge-50",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "change",
+      "target": "change-stages",
+      "id": "edge-51",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "change",
+      "target": "change-major",
+      "id": "edge-52",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "change",
+      "target": "change-attachments",
+      "id": "edge-53",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "quality",
+      "target": "quality-naming",
+      "id": "edge-54",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "quality",
+      "target": "quality-size",
+      "id": "edge-55",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "quality",
+      "target": "quality-compress",
+      "id": "edge-56",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "quality",
+      "target": "quality-script",
+      "id": "edge-57",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "quality",
+      "target": "quality-dod",
+      "id": "edge-58",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "risks",
+      "target": "risk-missing",
+      "id": "edge-59",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "risks",
+      "target": "risk-size",
+      "id": "edge-60",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "risks",
+      "target": "risk-i18n",
+      "id": "edge-61",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "risks",
+      "target": "risk-changes",
+      "id": "edge-62",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "checklists",
+      "target": "list-pre",
+      "id": "edge-63",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "checklists",
+      "target": "list-export",
+      "id": "edge-64",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "checklists",
+      "target": "list-integrate",
+      "id": "edge-65",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "verify",
+      "target": "verify-check-assets",
+      "id": "edge-66",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "verify",
+      "target": "verify-smoke",
+      "id": "edge-67",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "next",
+      "target": "next-manifest",
+      "id": "edge-68",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "next",
+      "target": "next-webp",
+      "id": "edge-69",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "next",
+      "target": "next-jsx",
+      "id": "edge-70",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "next",
+      "target": "next-dashboard",
+      "id": "edge-71",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "art-root",
+      "target": "plan",
+      "id": "reactflow__edge-art-rootsource-left-plansource-right",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-bottom"
+    },
+    {
+      "source": "art-root",
+      "target": "raci",
+      "id": "reactflow__edge-art-rootsource-racisource-left",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "art-root",
+      "target": "psd",
+      "id": "reactflow__edge-art-rootsource-left-psdsource-right",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "art-root",
+      "target": "principles",
+      "id": "reactflow__edge-art-rootsource-left-principlestarget",
+      "sourceHandle": "source-top",
+      "targetHandle": "target-top"
+    },
+    {
+      "source": "art-root",
+      "target": "naming",
+      "id": "reactflow__edge-art-rootsource-namingtarget",
+      "sourceHandle": "source-top",
+      "targetHandle": "target-top"
+    },
+    {
+      "source": "contract",
+      "target": "inputs",
+      "id": "reactflow__edge-contractsource-inputssource-left",
+      "style": {
+        "stroke": "#94a3b8",
+        "strokeWidth": 2
+      },
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "contract",
+      "target": "outputs",
+      "id": "reactflow__edge-contractsource-outputssource-left",
+      "style": {
+        "stroke": "#94a3b8",
+        "strokeWidth": 2
+      },
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "art-root",
+      "target": "contract",
+      "id": "reactflow__edge-art-rootsource-right-contractsource-left",
+      "sourceHandle": "source-top",
+      "targetHandle": "target-top"
+    },
+    {
+      "source": "art-root",
+      "target": "workflow",
+      "id": "reactflow__edge-art-rootsource-right-workflowtarget"
+    }
+  ],
+  "updatedAt": "2025-10-07T10:27:53.767Z"
+}

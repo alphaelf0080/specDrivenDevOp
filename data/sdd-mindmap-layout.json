@@ -1,0 +1,1360 @@
+{
+  "nodes": [
+    {
+      "id": "root",
+      "label": "SDD 規格驅動開發",
+      "type": "root",
+      "position": {
+        "x": 14.058907889265228,
+        "y": -44.81276889703294
+      }
+    },
+    {
+      "id": "overview",
+      "label": "方案概述",
+      "type": "branch",
+      "position": {
+        "x": 400,
+        "y": -800
+      }
+    },
+    {
+      "id": "overview-concept",
+      "label": "核心理念",
+      "type": "branch",
+      "position": {
+        "x": 700,
+        "y": -950
+      }
+    },
+    {
+      "id": "overview-concept-1",
+      "label": "規格檔為中心",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": -1000
+      }
+    },
+    {
+      "id": "overview-concept-2",
+      "label": "JSON Schema 定義",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": -950
+      }
+    },
+    {
+      "id": "overview-concept-3",
+      "label": "單一真理來源",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": -900
+      }
+    },
+    {
+      "id": "overview-goals",
+      "label": "方案目標",
+      "type": "branch",
+      "position": {
+        "x": 700,
+        "y": -800
+      }
+    },
+    {
+      "id": "overview-goals-1",
+      "label": "縮短開發週期 50%",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": -850
+      }
+    },
+    {
+      "id": "overview-goals-2",
+      "label": "降低溝通成本",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": -800
+      }
+    },
+    {
+      "id": "overview-goals-3",
+      "label": "提升品質",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": -750
+      }
+    },
+    {
+      "id": "overview-arch",
+      "label": "技術架構",
+      "type": "branch",
+      "position": {
+        "x": 700,
+        "y": -650
+      }
+    },
+    {
+      "id": "overview-arch-1",
+      "label": "Schema 驗證器",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": -700
+      }
+    },
+    {
+      "id": "overview-arch-2",
+      "label": "平行開發模式",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": -650
+      }
+    },
+    {
+      "id": "roles",
+      "label": "角色職責",
+      "type": "branch",
+      "position": {
+        "x": 550,
+        "y": -400
+      }
+    },
+    {
+      "id": "roles-math",
+      "label": "數值企劃",
+      "type": "branch",
+      "position": {
+        "x": 850,
+        "y": -550
+      }
+    },
+    {
+      "id": "roles-math-1",
+      "label": "設計數學模型",
+      "type": "leaf",
+      "position": {
+        "x": 1100,
+        "y": -600
+      }
+    },
+    {
+      "id": "roles-math-2",
+      "label": "制定賠付表",
+      "type": "leaf",
+      "position": {
+        "x": 1100,
+        "y": -560
+      }
+    },
+    {
+      "id": "roles-math-3",
+      "label": "撰寫規格檔",
+      "type": "leaf",
+      "position": {
+        "x": 1100,
+        "y": -520
+      }
+    },
+    {
+      "id": "roles-math-4",
+      "label": "AI 調參優化",
+      "type": "leaf",
+      "position": {
+        "x": 1100,
+        "y": -480
+      }
+    },
+    {
+      "id": "roles-art",
+      "label": "美術設計",
+      "type": "branch",
+      "position": {
+        "x": 850,
+        "y": -420
+      }
+    },
+    {
+      "id": "roles-art-1",
+      "label": "產出視覺資產",
+      "type": "leaf",
+      "position": {
+        "x": 1273.1003033865782,
+        "y": -461.422862660028
+      }
+    },
+    {
+      "id": "roles-art-2",
+      "label": "符號圖檔設計",
+      "type": "leaf",
+      "position": {
+        "x": 1271.34293990042,
+        "y": -408.24263651384183
+      }
+    },
+    {
+      "id": "roles-art-3",
+      "label": "資產命名規範",
+      "type": "leaf",
+      "position": {
+        "x": 1273.1003033865782,
+        "y": -352.4263651384185
+      }
+    },
+    {
+      "id": "roles-fe",
+      "label": "前端工程師",
+      "type": "branch",
+      "position": {
+        "x": 850,
+        "y": -290
+      }
+    },
+    {
+      "id": "roles-fe-1",
+      "label": "渲染遊戲畫面",
+      "type": "leaf",
+      "position": {
+        "x": 1100,
+        "y": -320
+      }
+    },
+    {
+      "id": "roles-fe-2",
+      "label": "實作使用者互動",
+      "type": "leaf",
+      "position": {
+        "x": 1100,
+        "y": -280
+      }
+    },
+    {
+      "id": "roles-fe-3",
+      "label": "Mock 模式開發",
+      "type": "leaf",
+      "position": {
+        "x": 1100,
+        "y": -230.76344462458974
+      }
+    },
+    {
+      "id": "roles-be",
+      "label": "後端工程師",
+      "type": "branch",
+      "position": {
+        "x": 850,
+        "y": -160
+      }
+    },
+    {
+      "id": "roles-be-1",
+      "label": "實作遊戲伺服器",
+      "type": "leaf",
+      "position": {
+        "x": 1100,
+        "y": -190
+      }
+    },
+    {
+      "id": "roles-be-2",
+      "label": "Spin API 實作",
+      "type": "leaf",
+      "position": {
+        "x": 1100,
+        "y": -150
+      }
+    },
+    {
+      "id": "roles-be-3",
+      "label": "RTP 監控",
+      "type": "leaf",
+      "position": {
+        "x": 1100,
+        "y": -110
+      }
+    },
+    {
+      "id": "roles-qa",
+      "label": "測試工程師",
+      "type": "branch",
+      "position": {
+        "x": 850,
+        "y": -30
+      }
+    },
+    {
+      "id": "roles-qa-1",
+      "label": "數學模型測試",
+      "type": "leaf",
+      "position": {
+        "x": 1100,
+        "y": -60
+      }
+    },
+    {
+      "id": "roles-qa-2",
+      "label": "E2E 整合測試",
+      "type": "leaf",
+      "position": {
+        "x": 1100,
+        "y": -20
+      }
+    },
+    {
+      "id": "roles-qa-3",
+      "label": "壓力測試",
+      "type": "leaf",
+      "position": {
+        "x": 1100,
+        "y": 20
+      }
+    },
+    {
+      "id": "workflow",
+      "label": "開發流程",
+      "type": "branch",
+      "position": {
+        "x": 400,
+        "y": 100
+      }
+    },
+    {
+      "id": "workflow-start",
+      "label": "專案啟動階段",
+      "type": "branch",
+      "position": {
+        "x": 700,
+        "y": 50
+      }
+    },
+    {
+      "id": "workflow-start-1",
+      "label": "提出遊戲需求",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": 30
+      }
+    },
+    {
+      "id": "workflow-start-2",
+      "label": "撰寫規格檔",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": 70
+      }
+    },
+    {
+      "id": "workflow-daily",
+      "label": "日常開發流程",
+      "type": "branch",
+      "position": {
+        "x": 700,
+        "y": 150
+      }
+    },
+    {
+      "id": "workflow-daily-1",
+      "label": "CI/CD 流水線",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": 130
+      }
+    },
+    {
+      "id": "workflow-daily-2",
+      "label": "分支策略管理",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": 170
+      }
+    },
+    {
+      "id": "techstack",
+      "label": "工具技術棧",
+      "type": "branch",
+      "position": {
+        "x": 400,
+        "y": 350
+      }
+    },
+    {
+      "id": "techstack-core",
+      "label": "核心技術",
+      "type": "branch",
+      "position": {
+        "x": 700,
+        "y": 280
+      }
+    },
+    {
+      "id": "techstack-core-1",
+      "label": "JSON + Zod Schema",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": 230
+      }
+    },
+    {
+      "id": "techstack-core-2",
+      "label": "React/Vue + PixiJS",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": 270
+      }
+    },
+    {
+      "id": "techstack-core-3",
+      "label": "Node.js Express",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": 310
+      }
+    },
+    {
+      "id": "techstack-core-4",
+      "label": "TypeScript 引擎",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": 350
+      }
+    },
+    {
+      "id": "techstack-cli",
+      "label": "CLI 工具",
+      "type": "branch",
+      "position": {
+        "x": 700,
+        "y": 420
+      }
+    },
+    {
+      "id": "techstack-cli-1",
+      "label": "validate 驗證規格",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": 380
+      }
+    },
+    {
+      "id": "techstack-cli-2",
+      "label": "simulate 模擬遊戲",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": 420
+      }
+    },
+    {
+      "id": "techstack-cli-3",
+      "label": "optimize AI 調參",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": 460
+      }
+    },
+    {
+      "id": "techstack-cli-4",
+      "label": "generate 生成程式碼",
+      "type": "leaf",
+      "position": {
+        "x": 950,
+        "y": 500
+      }
+    },
+    {
+      "id": "quality",
+      "label": "品質保證",
+      "type": "branch",
+      "position": {
+        "x": 100,
+        "y": 450
+      }
+    },
+    {
+      "id": "quality-math",
+      "label": "數學驗證",
+      "type": "branch",
+      "position": {
+        "x": 400,
+        "y": 530
+      }
+    },
+    {
+      "id": "quality-math-1",
+      "label": "RTP 範圍檢查",
+      "type": "leaf",
+      "position": {
+        "x": 650,
+        "y": 510
+      }
+    },
+    {
+      "id": "quality-math-2",
+      "label": "波動度驗證",
+      "type": "leaf",
+      "position": {
+        "x": 650,
+        "y": 550
+      }
+    },
+    {
+      "id": "quality-math-3",
+      "label": "最大贏分限制",
+      "type": "leaf",
+      "position": {
+        "x": 650,
+        "y": 590
+      }
+    },
+    {
+      "id": "quality-visual",
+      "label": "視覺一致性",
+      "type": "branch",
+      "position": {
+        "x": 400,
+        "y": 650
+      }
+    },
+    {
+      "id": "quality-visual-1",
+      "label": "Storybook 展示",
+      "type": "leaf",
+      "position": {
+        "x": 650,
+        "y": 630
+      }
+    },
+    {
+      "id": "quality-visual-2",
+      "label": "Chromatic 截圖比對",
+      "type": "leaf",
+      "position": {
+        "x": 650,
+        "y": 670
+      }
+    },
+    {
+      "id": "quality-perf",
+      "label": "效能基準",
+      "type": "branch",
+      "position": {
+        "x": 400,
+        "y": 750
+      }
+    },
+    {
+      "id": "quality-perf-1",
+      "label": "首屏載入 < 2秒",
+      "type": "leaf",
+      "position": {
+        "x": 650,
+        "y": 730
+      }
+    },
+    {
+      "id": "quality-perf-2",
+      "label": "動畫 FPS ≥ 60",
+      "type": "leaf",
+      "position": {
+        "x": 650,
+        "y": 770
+      }
+    },
+    {
+      "id": "compliance",
+      "label": "監管合規",
+      "type": "branch",
+      "position": {
+        "x": -300,
+        "y": 350
+      }
+    },
+    {
+      "id": "compliance-docs",
+      "label": "必要文件",
+      "type": "branch",
+      "position": {
+        "x": -600,
+        "y": 280
+      }
+    },
+    {
+      "id": "compliance-docs-1",
+      "label": "數學報告",
+      "type": "leaf",
+      "position": {
+        "x": -850,
+        "y": 240
+      }
+    },
+    {
+      "id": "compliance-docs-2",
+      "label": "RNG 認證",
+      "type": "leaf",
+      "position": {
+        "x": -850,
+        "y": 280
+      }
+    },
+    {
+      "id": "compliance-docs-3",
+      "label": "遊戲紀錄可追溯",
+      "type": "leaf",
+      "position": {
+        "x": -850,
+        "y": 320
+      }
+    },
+    {
+      "id": "compliance-audit",
+      "label": "審計流程",
+      "type": "branch",
+      "position": {
+        "x": -600,
+        "y": 420
+      }
+    },
+    {
+      "id": "compliance-audit-1",
+      "label": "玩家可驗證機制",
+      "type": "leaf",
+      "position": {
+        "x": -850,
+        "y": 400
+      }
+    },
+    {
+      "id": "compliance-audit-2",
+      "label": "公平性證明",
+      "type": "leaf",
+      "position": {
+        "x": -850,
+        "y": 440
+      }
+    },
+    {
+      "id": "roadmap",
+      "label": "實施路線圖",
+      "type": "branch",
+      "position": {
+        "x": -360.8829576808821,
+        "y": -94.09554078201994
+      }
+    },
+    {
+      "id": "roadmap-phase1",
+      "label": "Phase 1: 基礎建設",
+      "type": "branch",
+      "position": {
+        "x": -700,
+        "y": -200
+      }
+    },
+    {
+      "id": "roadmap-phase1-1",
+      "label": "建立規格 Schema",
+      "type": "leaf",
+      "position": {
+        "x": -948.931832226262,
+        "y": -269.90869766466335
+      }
+    },
+    {
+      "id": "roadmap-phase1-2",
+      "label": "開發遊戲引擎",
+      "type": "leaf",
+      "position": {
+        "x": -950,
+        "y": -200
+      }
+    },
+    {
+      "id": "roadmap-phase1-3",
+      "label": "實作 CLI 工具",
+      "type": "leaf",
+      "position": {
+        "x": -950,
+        "y": -160
+      }
+    },
+    {
+      "id": "roadmap-phase2",
+      "label": "Phase 2: 首款遊戲",
+      "type": "branch",
+      "position": {
+        "x": -700,
+        "y": -70
+      }
+    },
+    {
+      "id": "roadmap-phase2-1",
+      "label": "撰寫規格",
+      "type": "leaf",
+      "position": {
+        "x": -950,
+        "y": -110
+      }
+    },
+    {
+      "id": "roadmap-phase2-2",
+      "label": "產出資產",
+      "type": "leaf",
+      "position": {
+        "x": -950,
+        "y": -70
+      }
+    },
+    {
+      "id": "roadmap-phase2-3",
+      "label": "前後端實作",
+      "type": "leaf",
+      "position": {
+        "x": -950,
+        "y": -30
+      }
+    },
+    {
+      "id": "roadmap-phase3",
+      "label": "Phase 3: 平台化",
+      "type": "branch",
+      "position": {
+        "x": -661.6210150831296,
+        "y": 78.4514350561877
+      }
+    },
+    {
+      "id": "roadmap-phase3-1",
+      "label": "規格編輯器",
+      "type": "leaf",
+      "position": {
+        "x": -950,
+        "y": 20
+      }
+    },
+    {
+      "id": "roadmap-phase3-2",
+      "label": "資產管理平台",
+      "type": "leaf",
+      "position": {
+        "x": -950,
+        "y": 60
+      }
+    },
+    {
+      "id": "roadmap-phase3-3",
+      "label": "A/B Testing 系統",
+      "type": "leaf",
+      "position": {
+        "x": -950,
+        "y": 100
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "root",
+      "target": "overview",
+      "id": "e-root-overview",
+      "sourceHandle": "source-top",
+      "targetHandle": "target-top"
+    },
+    {
+      "source": "overview",
+      "target": "overview-concept",
+      "id": "e-overview-concept",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "overview-concept",
+      "target": "overview-concept-1",
+      "id": "e-overview-concept-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "overview-concept",
+      "target": "overview-concept-2",
+      "id": "e-overview-concept-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "overview-concept",
+      "target": "overview-concept-3",
+      "id": "e-overview-concept-3",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "overview",
+      "target": "overview-goals",
+      "id": "e-overview-goals",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "overview-goals",
+      "target": "overview-goals-1",
+      "id": "e-overview-goals-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "overview-goals",
+      "target": "overview-goals-2",
+      "id": "e-overview-goals-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "overview-goals",
+      "target": "overview-goals-3",
+      "id": "e-overview-goals-3",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "overview",
+      "target": "overview-arch",
+      "id": "e-overview-arch",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "overview-arch",
+      "target": "overview-arch-1",
+      "id": "e-overview-arch-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "overview-arch",
+      "target": "overview-arch-2",
+      "id": "e-overview-arch-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "root",
+      "target": "roles",
+      "id": "e-root-roles",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles",
+      "target": "roles-math",
+      "id": "e-roles-math",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-math",
+      "target": "roles-math-1",
+      "id": "e-roles-math-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-math",
+      "target": "roles-math-2",
+      "id": "e-roles-math-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-math",
+      "target": "roles-math-3",
+      "id": "e-roles-math-3",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-math",
+      "target": "roles-math-4",
+      "id": "e-roles-math-4",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles",
+      "target": "roles-art",
+      "id": "e-roles-art",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-art",
+      "target": "roles-art-1",
+      "id": "e-roles-art-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-art",
+      "target": "roles-art-2",
+      "id": "e-roles-art-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-art",
+      "target": "roles-art-3",
+      "id": "e-roles-art-3",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles",
+      "target": "roles-fe",
+      "id": "e-roles-fe",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-fe",
+      "target": "roles-fe-1",
+      "id": "e-roles-fe-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-fe",
+      "target": "roles-fe-2",
+      "id": "e-roles-fe-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-fe",
+      "target": "roles-fe-3",
+      "id": "e-roles-fe-3",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles",
+      "target": "roles-be",
+      "id": "e-roles-be",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-be",
+      "target": "roles-be-1",
+      "id": "e-roles-be-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-be",
+      "target": "roles-be-2",
+      "id": "e-roles-be-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-be",
+      "target": "roles-be-3",
+      "id": "e-roles-be-3",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles",
+      "target": "roles-qa",
+      "id": "e-roles-qa",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-bottom"
+    },
+    {
+      "source": "roles-qa",
+      "target": "roles-qa-1",
+      "id": "e-roles-qa-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-qa",
+      "target": "roles-qa-2",
+      "id": "e-roles-qa-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "roles-qa",
+      "target": "roles-qa-3",
+      "id": "e-roles-qa-3",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "root",
+      "target": "workflow",
+      "id": "e-root-workflow",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "workflow",
+      "target": "workflow-start",
+      "id": "e-workflow-start",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "workflow-start",
+      "target": "workflow-start-1",
+      "id": "e-workflow-start-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "workflow-start",
+      "target": "workflow-start-2",
+      "id": "e-workflow-start-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "workflow",
+      "target": "workflow-daily",
+      "id": "e-workflow-daily",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "workflow-daily",
+      "target": "workflow-daily-1",
+      "id": "e-workflow-daily-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "workflow-daily",
+      "target": "workflow-daily-2",
+      "id": "e-workflow-daily-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "root",
+      "target": "techstack",
+      "id": "e-root-techstack",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-bottom"
+    },
+    {
+      "source": "techstack",
+      "target": "techstack-core",
+      "id": "e-techstack-core",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "techstack-core",
+      "target": "techstack-core-1",
+      "id": "e-techstack-core-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "techstack-core",
+      "target": "techstack-core-2",
+      "id": "e-techstack-core-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "techstack-core",
+      "target": "techstack-core-3",
+      "id": "e-techstack-core-3",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "techstack-core",
+      "target": "techstack-core-4",
+      "id": "e-techstack-core-4",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "techstack",
+      "target": "techstack-cli",
+      "id": "e-techstack-cli",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "techstack-cli",
+      "target": "techstack-cli-1",
+      "id": "e-techstack-cli-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "techstack-cli",
+      "target": "techstack-cli-2",
+      "id": "e-techstack-cli-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "techstack-cli",
+      "target": "techstack-cli-3",
+      "id": "e-techstack-cli-3",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "techstack-cli",
+      "target": "techstack-cli-4",
+      "id": "e-techstack-cli-4",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "root",
+      "target": "quality",
+      "id": "e-root-quality",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-bottom"
+    },
+    {
+      "source": "quality",
+      "target": "quality-math",
+      "id": "e-quality-math",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "quality-math",
+      "target": "quality-math-1",
+      "id": "e-quality-math-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "quality-math",
+      "target": "quality-math-2",
+      "id": "e-quality-math-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "quality-math",
+      "target": "quality-math-3",
+      "id": "e-quality-math-3",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "quality",
+      "target": "quality-visual",
+      "id": "e-quality-visual",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "quality-visual",
+      "target": "quality-visual-1",
+      "id": "e-quality-visual-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "quality-visual",
+      "target": "quality-visual-2",
+      "id": "e-quality-visual-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "quality",
+      "target": "quality-perf",
+      "id": "e-quality-perf",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-bottom"
+    },
+    {
+      "source": "quality-perf",
+      "target": "quality-perf-1",
+      "id": "e-quality-perf-1",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "quality-perf",
+      "target": "quality-perf-2",
+      "id": "e-quality-perf-2",
+      "sourceHandle": "source-right",
+      "targetHandle": "target-right"
+    },
+    {
+      "source": "root",
+      "target": "compliance",
+      "id": "e-root-compliance",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-bottom"
+    },
+    {
+      "source": "compliance",
+      "target": "compliance-docs",
+      "id": "e-compliance-docs",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "compliance-docs",
+      "target": "compliance-docs-1",
+      "id": "e-compliance-docs-1",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "compliance-docs",
+      "target": "compliance-docs-2",
+      "id": "e-compliance-docs-2",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "compliance-docs",
+      "target": "compliance-docs-3",
+      "id": "e-compliance-docs-3",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "compliance",
+      "target": "compliance-audit",
+      "id": "e-compliance-audit",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "compliance-audit",
+      "target": "compliance-audit-1",
+      "id": "e-compliance-audit-1",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "compliance-audit",
+      "target": "compliance-audit-2",
+      "id": "e-compliance-audit-2",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "root",
+      "target": "roadmap",
+      "id": "e-root-roadmap",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "roadmap",
+      "target": "roadmap-phase1",
+      "id": "e-roadmap-phase1",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "roadmap-phase1",
+      "target": "roadmap-phase1-1",
+      "id": "e-roadmap-phase1-1",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "roadmap-phase1",
+      "target": "roadmap-phase1-2",
+      "id": "e-roadmap-phase1-2",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "roadmap-phase1",
+      "target": "roadmap-phase1-3",
+      "id": "e-roadmap-phase1-3",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "roadmap",
+      "target": "roadmap-phase2",
+      "id": "e-roadmap-phase2",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "roadmap-phase2",
+      "target": "roadmap-phase2-1",
+      "id": "e-roadmap-phase2-1",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "roadmap-phase2",
+      "target": "roadmap-phase2-2",
+      "id": "e-roadmap-phase2-2",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "roadmap-phase2",
+      "target": "roadmap-phase2-3",
+      "id": "e-roadmap-phase2-3",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "roadmap",
+      "target": "roadmap-phase3",
+      "id": "e-roadmap-phase3",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "roadmap-phase3",
+      "target": "roadmap-phase3-1",
+      "id": "e-roadmap-phase3-1",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "roadmap-phase3",
+      "target": "roadmap-phase3-2",
+      "id": "e-roadmap-phase3-2",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    },
+    {
+      "source": "roadmap-phase3",
+      "target": "roadmap-phase3-3",
+      "id": "e-roadmap-phase3-3",
+      "sourceHandle": "source-left",
+      "targetHandle": "target-left"
+    }
+  ],
+  "updatedAt": "2025-10-07T03:25:52.621Z"
+}

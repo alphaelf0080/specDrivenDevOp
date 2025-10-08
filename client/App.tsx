@@ -120,34 +120,13 @@ function App() {
       );
 
     case 'tree-ui-layout':
-      return (
-        <div style={{ position: 'relative' }}>
-          <button onClick={handleBackToHome} style={backButtonStyle}>
-            ← 返回首頁
-          </button>
-          <TreeUiLayoutPage />
-        </div>
-      );
+      return <TreeUiLayoutPage onBackHome={handleBackToHome} />;
 
     case 'tree-ui-layout-rich':
-      return (
-        <div style={{ position: 'relative' }}>
-          <button onClick={handleBackToHome} style={backButtonStyle}>
-            ← 返回首頁
-          </button>
-          <TreeUiLayoutRichPage />
-        </div>
-      );
+      return <TreeUiLayoutRichPage onBackHome={handleBackToHome} />;
 
     case 'tree-psd-structure':
-      return (
-        <div style={{ position: 'relative' }}>
-          <button onClick={handleBackToHome} style={backButtonStyle}>
-            ← 返回首頁
-          </button>
-          <TreePsdStructurePage />
-        </div>
-      );
+      return <TreePsdStructurePage onBackHome={handleBackToHome} />;
 
     case 'home':
     default:

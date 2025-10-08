@@ -1,0 +1,64 @@
+{
+  "nodes": [
+    {
+      "id": "root",
+      "label": "New Mind Map",
+      "type": "root",
+      "position": {
+        "x": -2.976908814883572,
+        "y": -13.059033376745433
+      }
+    },
+    {
+      "id": "node-1759804317223",
+      "label": "新節點",
+      "type": "leaf",
+      "position": {
+        "x": -217.31860206438003,
+        "y": 60.73524395014768
+      },
+      "data": {
+        "description": ""
+      },
+      "style": {
+        "backgroundColor": "#f3e8ff",
+        "borderColor": "#a855f7",
+        "borderWidth": 2,
+        "textColor": "#6b21a8",
+        "fontSize": 14,
+        "borderRadius": 8,
+        "fontWeight": "normal"
+      }
+    },
+    {
+      "id": "node-1759813979803",
+      "label": "新節點",
+      "type": "leaf",
+      "position": {
+        "x": 272,
+        "y": 130
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "root",
+      "target": "node-1759813979803",
+      "id": "edge-1759813979803",
+      "style": {
+        "stroke": "#efff0a",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "source": "root",
+      "target": "node-1759804317223",
+      "id": "reactflow__edge-rootsource-left-node-1759804317223target-right",
+      "style": {
+        "stroke": "#4391fe",
+        "strokeWidth": 3
+      }
+    }
+  ],
+  "updatedAt": "2025-10-07T05:48:17.124Z"
+}

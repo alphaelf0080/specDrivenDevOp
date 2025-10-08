@@ -1,0 +1,9 @@
+{
+  "id": "sdd-mindmap",
+  "name": "SDD 規格驅動開發方案",
+  "description": "Slot Game 規格驅動開發完整方案計劃書 - 包含方案概述、角色職責、開發流程、工具技術棧、品質保證、監管合規和實施路線圖",
+  "template": "sdd",
+  "createdAt": "2025-10-07T00:00:00.000Z",
+  "updatedAt": "2025-10-07T03:25:52.621Z",
+  "nodeCount": 85
+}

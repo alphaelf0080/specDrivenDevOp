@@ -1,0 +1,9 @@
+{
+  "id": "art-mindmap",
+  "name": "SDD 美術開發方案與執行計畫",
+  "description": "依據 docs/SDD-美術開發方案與執行計畫.md 產生的心智圖，涵蓋原則、Contract、命名/尺寸、PSD/切圖、端到端流程、8週排程、RACI、RFC變更、品質門、風險、清單、驗證與擴充。",
+  "template": "custom",
+  "createdAt": "2025-10-07T00:00:00.000Z",
+  "updatedAt": "2025-10-07T10:27:53.767Z",
+  "nodeCount": 73
+}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { getTreeHistory, formatRelativeTime, TreeHistoryItem } from '../../utils/treeHistory';
 import './HomePage.css';
 
 interface HomePageProps {
@@ -17,6 +18,7 @@ const API_BASE_URL = '/api';
 
 const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap }) => {
   const [recentMindMaps, setRecentMindMaps] = useState<MindMapItem[]>([]);
+  const [recentTrees, setRecentTrees] = useState<TreeHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   // 載入最新的三個心智圖
@@ -39,6 +41,10 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap }) => {
     };
 
     loadRecentMindMaps();
+    
+    // 載入樹狀圖歷史
+    const treeHistory = getTreeHistory();
+    setRecentTrees(treeHistory);
   }, []);
 
   const handleOpenMindMap = (id: string, name: string) => {
@@ -168,6 +174,60 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap }) => {
                   onClick={() => onNavigate('mindmap-manager')}
                 >
                   建立第一個心智圖
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* 樹狀圖區塊 */}
+        <section className="tree-section">
+          <div className="section-header">
+            <h2>🌳 最近查看的樹狀圖</h2>
+          </div>
+
+          <div className="tree-list">
+            {recentTrees.length > 0 ? (
+              recentTrees.map((tree) => (
+                <div
+                  key={tree.id}
+                  className="tree-card"
+                  onClick={() => onNavigate(tree.path.replace('/', ''))}
+                >
+                  <div className="tree-card-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#tree-gradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M2 17L12 22L22 17" stroke="url(#tree-gradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M2 12L12 17L22 12" stroke="url(#tree-gradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <defs>
+                        <linearGradient id="tree-gradient" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                          <stop offset="0%" stopColor="#22c55e"/>
+                          <stop offset="100%" stopColor="#15803d"/>
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </div>
+                  <div className="tree-card-content">
+                    <div className="tree-card-title">{tree.name}</div>
+                    <div className="tree-card-time">
+                      {formatRelativeTime(tree.visitedAt)}
+                    </div>
+                  </div>
+                  <div className="tree-card-action">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="empty-state">
+                <p>尚未查看任何樹狀圖</p>
+                <button 
+                  className="create-first-btn"
+                  onClick={() => onNavigate('tree-ui-layout')}
+                >
+                  查看第一個樹狀圖
                 </button>
               </div>
             )}

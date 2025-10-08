@@ -9,6 +9,76 @@
 
 ---
 
+## 2025-10-08
+
+### 請求 #20
+首頁中間版面加入最近查看的樹狀圖區域
+
+**使用者請求**：
+> 中間版面，加上一個方塊區域，用來顯示最新編輯過的三個樹狀圖
+
+**時間**：2025-10-08 10:15
+
+### 執行動作（摘要）
+
+1. 建立樹狀圖瀏覽歷史追蹤模組 (`client/utils/treeHistory.ts`)
+   - 實作 `recordTreeVisit()` 記錄訪問
+   - 實作 `getTreeHistory()` 讀取歷史
+   - 實作 `formatRelativeTime()` 格式化相對時間
+   - 使用 localStorage 持久化儲存，最多保留 3 筆記錄
+
+2. 更新所有樹狀圖頁面以自動記錄訪問
+   - `TreeUiLayoutPage.tsx`：記錄「UI Layout 樹狀圖」
+   - `TreeUiLayoutRichPage.tsx`：記錄「UI Layout 完整資訊」
+   - `TreePsdStructurePage.tsx`：記錄「PSD 完整結構樹」
+   - 使用 `useEffect` hook 在頁面載入時記錄
+
+3. 首頁新增「最近查看的樹狀圖」區域
+   - 載入並顯示最近 3 個訪問記錄
+   - 綠色主題卡片設計（呼應樹狀圖概念）
+   - 顯示相對時間（剛剛/X分鐘前/X小時前/X天前）
+   - 點擊卡片快速跳轉到對應樹狀圖
+   - 空狀態提示與引導按鈕
+
+4. 樣式設計
+   - 新增 `.tree-section` 和 `.tree-card` 系列樣式
+   - 綠色漸層配色 (#f0fdf4 → #dcfce7)
+   - 左側綠色指示條 (#22c55e → #15803d)
+   - Hover 效果：向右移動 8px + 陰影加深
+   - 與心智圖卡片保持視覺一致性
+
+### 結果
+
+**✅ 成功** - 首頁成功新增樹狀圖歷史區域
+
+**新增檔案**：
+- `client/utils/treeHistory.ts` - 歷史追蹤工具模組
+- `docs/tree-history-feature.md` - 功能說明文件
+
+**修改檔案**：
+- `client/components/Navigation/HomePage.tsx` - 新增樹狀圖區域
+- `client/components/Navigation/HomePage.css` - 新增樹狀圖卡片樣式
+- `client/components/Tree/TreeUiLayoutPage.tsx` - 加入訪問記錄
+- `client/components/Tree/TreeUiLayoutRichPage.tsx` - 加入訪問記錄
+- `client/components/Tree/TreePsdStructurePage.tsx` - 加入訪問記錄
+
+**功能特色**：
+- 🌳 自動追蹤訪問記錄
+- 💚 綠色主題配色
+- ⏰ 智慧時間顯示
+- 🎯 快速跳轉
+- 💾 localStorage 持久化
+
+**驗證**：
+- TypeScript 編譯通過（無錯誤）
+- Vite 熱更新運作正常
+- 所有頁面功能正常
+
+### 狀態
+成功（首頁已整合樹狀圖歷史追蹤功能）
+
+---
+
 ## 2025-10-07
 
 ### 請求 #19
