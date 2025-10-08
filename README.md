@@ -31,6 +31,23 @@
 - TypeScript 型別安全
 - 模組化架構設計
 
+### 🗄️ 資料庫系統
+- **PostgreSQL 資料表配置系統**
+  - 集中化資料表定義（table.config.ts）
+  - 類型安全的 TypeScript 定義
+  - 自動 SQL 生成器
+  - 支援 JSONB、索引、外鍵、觸發器
+- **專案索引資料表 (project_index)**
+  - 48 個欄位管理 Slot 遊戲專案
+  - 完整的 Slot 特性配置（轉軸、支付線、RTP、波動性）
+  - JSONB 彈性資料（features, symbols, paytable, metadata）
+  - 全文搜尋與 GIN 索引支援
+  - 開發進度追蹤與狀態管理
+- **資料庫指令**：
+  - `npm run db:create-tables` - 建立所有資料表
+  - `npm run db:export-sql` - 匯出 SQL 語句
+  - `npm run db:project-index-examples` - 查看使用範例
+
 ## 快速開始（Quick Start）
 
 安裝相依套件並執行測試／建置。

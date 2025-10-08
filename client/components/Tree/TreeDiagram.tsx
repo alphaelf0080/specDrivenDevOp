@@ -933,6 +933,7 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
           zoomOnScroll
           panOnScroll
           defaultViewport={viewport}
+          proOptions={{ hideAttribution: true }}
           onPaneClick={() => {
             setSelectedNode(null);
             setIsEditing(false);

@@ -3,13 +3,14 @@ import MindMapDemo from './components/MindMap/MindMapDemo';
 import SDDMindMap from './components/MindMap/SDDMindMap';
 import MindMapManagerPage from './components/MindMap/MindMapManagerPage';
 import HomePage from './components/Navigation/HomePage';
+import ProjectManager from './components/ProjectManager/ProjectManager';
 import { TreeDemoPage } from './components/Tree';
 import TreeUiLayoutPage from './components/Tree/TreeUiLayoutPage';
 import TreePsdStructurePage from './components/Tree/TreePsdStructurePage';
 import TreeUiLayoutRichPage from './components/Tree/TreeUiLayoutRichPage';
 import './App.css';
 
-type PageView = 'home' | 'mindmap-manager' | 'sdd-mindmap' | 'demo-mindmap' | 'slot-engine' | 'tree-demo' | 'tree-ui-layout' | 'tree-ui-layout-rich' | 'tree-psd-structure';
+type PageView = 'home' | 'project-manager' | 'mindmap-manager' | 'sdd-mindmap' | 'demo-mindmap' | 'slot-engine' | 'tree-demo' | 'tree-ui-layout' | 'tree-ui-layout-rich' | 'tree-psd-structure';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageView>('home');
@@ -18,7 +19,7 @@ function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const view = params.get('view') as PageView;
-    if (view && ['mindmap-manager', 'sdd-mindmap', 'demo-mindmap', 'slot-engine', 'tree-demo', 'tree-ui-layout', 'tree-ui-layout-rich', 'tree-psd-structure'].includes(view)) {
+    if (view && ['project-manager', 'mindmap-manager', 'sdd-mindmap', 'demo-mindmap', 'slot-engine', 'tree-demo', 'tree-ui-layout', 'tree-ui-layout-rich', 'tree-psd-structure'].includes(view)) {
       setCurrentPage(view);
     }
   }, []);
@@ -78,6 +79,9 @@ function App() {
           <MindMapDemo />
         </div>
       );
+
+    case 'project-manager':
+      return <ProjectManager onClose={handleBackToHome} />;
 
     case 'mindmap-manager':
       // 檢查是否有指定的心智圖 ID

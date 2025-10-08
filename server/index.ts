@@ -7,6 +7,13 @@ import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs/promises";
 
+// 資料庫相關
+import { getDatabase } from "./database/db.js";
+import { initializeProjectsTable, loadTableData } from "./database/db-init.js";
+
+// 路由
+import projectsRouter from "./routes/projects.js";
+
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -17,6 +24,9 @@ const PORT = process.env.PORT || 5010;
 const NODE_ENV = process.env.NODE_ENV || "development";
 
 const DATA_DIR = path.join(__dirname, "../data");
+
+// 初始化資料庫連線
+const db = getDatabase();
 
 app.use(helmet());
 app.use(
@@ -332,6 +342,33 @@ app.get("/api/health", (req: Request, res: Response) => {
   });
 });
 
+// 資料庫相關 API
+app.get("/api/db/init", async (req: Request, res: Response) => {
+  try {
+    console.log('📋 開始初始化資料庫...');
+    const projects = await initializeProjectsTable(db);
+    
+    res.json({
+      success: true,
+      message: "資料庫初始化成功",
+      data: {
+        projects,
+        count: projects.length,
+      },
+    });
+  } catch (error) {
+    console.error("❌ 資料庫初始化失敗:", error);
+    res.status(500).json({
+      success: false,
+      message: "資料庫初始化失敗",
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+});
+
+// 專案管理 API 路由
+app.use("/api/projects", projectsRouter);
+
 app.get("/api", (req: Request, res: Response) => {
   res.json({
     name: "Slot Game API",
@@ -339,6 +376,8 @@ app.get("/api", (req: Request, res: Response) => {
     description: "規格驅動老虎機遊戲 API",
     endpoints: {
       health: "/api/health",
+      dbInit: "/api/db/init",
+      projects: "/api/projects",
       spin: "/api/spin",
       validate: "/api/validate",
       simulate: "/api/simulate",

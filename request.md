@@ -11,6 +11,190 @@
 
 ## 2025-10-08
 
+### 請求 #25
+建立專案索引資料表 (project_index) 與完整文件
+
+**使用者請求**：
+> 定義一個 專案索引的 table config , 需包含 index, game id, game en name, game cn name, search key, description, 以及其他slot game 之後可能會使用到的資料欄位
+
+**時間**：2025-10-08 22:30
+
+### 執行動作（摘要）
+
+1. **建立 project_index 資料表定義**
+   - 在 `server/config/table.config.ts` 新增完整的資料表定義
+   - **48 個欄位**涵蓋所有 Slot 遊戲專案需求
+   - **13 個索引**優化查詢效能（含 GIN 全文搜尋索引）
+   - **5 個 JSONB 欄位**提供彈性資料擴展
+
+2. **欄位分類設計**
+   - 🎮 基本資訊（6）：game_id, game_name_en, game_name_cn, search_key, description, game_type
+   - 🎰 Slot 特性（14）：reel_count, row_count, payline_count, rtp, volatility, has_free_spin, has_wild, has_scatter, has_multiplier, max_win_multiplier 等
+   - 🖼️ 資產路徑（5）：thumbnail_url, banner_url, preview_video_url, asset_folder_path, psd_file_path
+   - 📈 開發管理（5）：dev_status, dev_progress, release_version, release_date, dev_team
+   - 💻 技術規格（4）：platform_support, screen_orientation, supported_languages, tech_stack
+   - 📦 JSONB 資料（5）：features, symbols, paytable, game_config, metadata
+   - 🏷️ 分類標籤（3）：tags, category, owner_id（外鍵 → users）
+   - ⚙️ 系統欄位（6）：created_at, updated_at, deleted_at, sort_order, is_active, is_featured
+
+3. **索引策略設計**
+   - **唯一索引**：idx_project_index_game_id（確保 game_id 不重複）
+   - **一般索引**：game_name_en, game_name_cn, game_type, dev_status, category, is_active, sort_order, owner_id
+   - **GIN 索引**：search_key（全文搜尋）、tags, features, metadata（JSONB 查詢優化）
+
+4. **建立使用範例檔案**
+   - `server/database/project-index-examples.ts`
+   - 10 個完整範例：SQL 生成、實際執行、JSONB 查詢、批次插入、統計查詢
+   - 修正 TypeScript 錯誤（orderBy 參數類型）
+
+5. **建立完整文件系統**
+   - `docs/project-index-guide.md`（~800 行）- 完整使用指南
+   - `docs/project-index-quickref.md` - 快速參考文件
+   - `docs/project-index-complete.md` - 完成總結報告
+   - `docs/UPDATE-2025-10-08-project-index.md` - 詳細更新記錄
+   - `docs/UPDATE-SUMMARY.md` - 簡短更新摘要
+
+6. **更新專案文件**
+   - `package.json` - 新增 `db:project-index-examples` 腳本
+   - `CHANGELOG.md` - 記錄本次更新的所有內容
+   - `README.md` - 新增「🗄️ 資料庫系統」說明區段
+
+### 結果
+
+**✅ 成功** - 專案索引資料表系統完整建立
+
+**新增檔案**：
+- `server/database/project-index-examples.ts` - 10 個使用範例（~400 行）
+- `docs/project-index-guide.md` - 完整使用指南（~800 行）
+- `docs/project-index-quickref.md` - 快速參考（~400 行）
+- `docs/project-index-complete.md` - 完成總結（~500 行）
+- `docs/UPDATE-2025-10-08-project-index.md` - 更新記錄（~600 行）
+- `docs/UPDATE-SUMMARY.md` - 更新摘要（~150 行）
+
+**修改檔案**：
+- `server/config/table.config.ts`
+  - 新增 `project_index` 資料表定義（~250 行）
+  - 48 個完整的欄位定義
+  - 13 個索引配置
+  - 包含 JSONB、外鍵、註解等進階功能
+
+- `package.json`
+  - 新增 `db:project-index-examples` npm 腳本
+
+- `CHANGELOG.md`
+  - 新增詳細的更新記錄
+  - 包含資料表結構、功能特色、使用場景說明
+
+- `README.md`
+  - 新增「🗄️ 資料庫系統」區段
+  - 說明 PostgreSQL 資料表配置系統
+  - 列出專案索引資料表功能和指令
+
+**資料表結構摘要**：
+
+| 類別 | 欄位數 | 主要欄位 |
+|------|--------|---------|
+| 基本資訊 | 6 | game_id, game_name_en, game_name_cn, search_key |
+| Slot 特性 | 14 | reel_count, payline_count, rtp, volatility, features |
+| 資產路徑 | 5 | thumbnail_url, banner_url, psd_file_path |
+| 開發管理 | 5 | dev_status, dev_progress, release_version |
+| 技術規格 | 4 | platform_support, supported_languages, tech_stack |
+| JSONB 資料 | 5 | features, symbols, paytable, game_config, metadata |
+| 分類標籤 | 3 | tags, category, owner_id |
+| 系統欄位 | 6 | created_at, updated_at, is_active, is_featured |
+| **總計** | **48** | |
+
+**索引配置**：
+- 唯一索引（1）：game_id
+- 一般索引（8）：game_name_en, game_name_cn, game_type, dev_status, category, is_active, sort_order, owner_id
+- GIN 索引（4）：search_key, tags, features, metadata
+
+**快速使用指令**：
+```bash
+# 建立所有資料表
+npm run db:create-tables
+
+# 查看專案索引範例
+npm run db:project-index-examples
+
+# 匯出 SQL 語句
+npm run db:export-sql
+```
+
+**使用範例**（建立遊戲）：
+```typescript
+import { generateInsertSQL } from './server/database/sql-generator.js';
+import { getDatabase } from './server/database/db.js';
+
+const db = getDatabase();
+await db.connect();
+
+const game = {
+  game_id: 'BFG_001',
+  game_name_en: 'Buffalo Fury',
+  game_name_cn: '狂暴水牛',
+  game_type: 'slot',
+  reel_count: 5,
+  row_count: 4,
+  payline_count: 1024,
+  rtp: 96.50,
+  volatility: 'high',
+  has_free_spin: true,
+  has_wild: true,
+  max_win_multiplier: 5000,
+  platform_support: JSON.stringify({ mobile: true, desktop: true }),
+  features: JSON.stringify(['Free Spins', 'Multiplier', 'Wild Symbol']),
+  tags: JSON.stringify(['popular', 'high_volatility', 'new']),
+};
+
+const query = generateInsertSQL('project_index', game);
+const result = await db.query(query.sql, query.params);
+console.log('建立成功:', result.rows[0]);
+```
+
+**功能特色**：
+- ✅ **完整性** - 48 個欄位涵蓋所有需求
+- ✅ **高效能** - 13 個索引確保查詢速度
+- ✅ **彈性化** - 5 個 JSONB 欄位擴展能力
+- ✅ **類型安全** - TypeScript + ColumnType 枚舉
+- ✅ **自動化** - SQL 自動生成器
+- ✅ **文件完善** - 6 份詳細說明文件
+
+**使用場景**：
+- 🎮 遊戲開發管理 - 追蹤專案進度、技術規格
+- 🔍 遊戲搜尋篩選 - 按類型、RTP、波動性、功能特性搜尋
+- 📊 數據統計分析 - 開發狀態、遊戲類型、主題分佈統計
+- 🎯 前台遊戲展示 - 精選遊戲、熱門排行、新遊戲推薦
+
+**驗證結果**：
+- ✅ TypeScript 編譯無錯誤
+- ✅ 所有檔案語法正確
+- ✅ 索引定義完整
+- ✅ JSONB 結構正確
+- ✅ 範例程式可執行
+- ✅ 文件說明完善
+
+**文件導覽**：
+- 📖 完整指南：`docs/project-index-guide.md`
+- ⚡ 快速參考：`docs/project-index-quickref.md`
+- 💻 使用範例：`server/database/project-index-examples.ts`
+- 📋 更新記錄：`docs/UPDATE-2025-10-08-project-index.md`
+- 📝 更新摘要：`docs/UPDATE-SUMMARY.md`
+- 📊 完成報告：`docs/project-index-complete.md`
+
+**技術亮點**：
+1. **JSONB 欄位設計** - 儲存複雜結構（platform_support, features, symbols, paytable）
+2. **GIN 索引優化** - 支援全文搜尋和 JSONB 高效查詢
+3. **外鍵關聯** - owner_id 連接 users 資料表
+4. **軟刪除設計** - deleted_at 欄位支援資料恢復
+5. **排序與狀態** - sort_order, is_active, is_featured 支援前台展示
+6. **完整註解** - 每個欄位都有中文說明
+
+**系統狀態**：
+🎉 **專案索引資料表系統已完整建立，可立即使用！**
+
+---
+
 ### 請求 #24
 樹狀圖視圖狀態持久化修復 - 改用事件驅動機制
 
