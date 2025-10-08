@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import ReactFlow, { Background, BaseEdge, Controls, Edge, EdgeProps, Handle, MarkerType, Node, Position, ReactFlowInstance, getSmoothStepPath } from 'reactflow';
+import ReactFlow, { Background, BaseEdge, Controls, Edge, EdgeProps, Handle, MarkerType, Node, Position, ReactFlowInstance, getSmoothStepPath, Viewport } from 'reactflow';
 import 'reactflow/dist/style.css';
 import './TreeDiagram.css';
 import dagre from 'dagre';
@@ -95,15 +95,18 @@ function layoutTree(root: TreeNode, dir: 'LR' | 'TB', nodeSize = nodeDefaults) {
   // 垂直布局(TB)使用更大的垂直間距，水平布局(LR)使用更大的水平間距
   const nodesep = dir === 'TB' ? 50 : 40;
   const ranksep = dir === 'TB' ? 80 : 60;
-  // 增加邊距，為根節點在最左上角留出更多空間
+  
+  // 設定 dagre 圖形屬性，確保同層級節點對齊
   g.setGraph({ 
     rankdir: dir, 
     nodesep, 
     ranksep, 
     marginx: 60, // 增加水平邊距
     marginy: 60, // 增加垂直邊距
-    align: dir === 'TB' ? 'UL' : 'UL', // 對齊到左上角
-    ranker: 'longest-path' // 使用最長路徑排序，有助於保持層次結構
+    align: dir === 'LR' ? 'UL' : 'UL', // 水平布局左上角對齊，垂直布局上對齊
+    ranker: 'tight-tree', // 使用緊湊樹排序，更好的層級對齊
+    acyclicer: 'greedy', // 貪婪算法處理環
+    edgesep: 10 // 邊間距
   });
   g.setDefaultEdgeLabel(() => ({}));
 
@@ -151,6 +154,48 @@ function layoutTree(root: TreeNode, dir: 'LR' | 'TB', nodeSize = nodeDefaults) {
       data: { ...n.data },
     } as Node;
   });
+
+  // 同層級節點對齊處理：確保同深度節點在相同 X 軸位置
+  if (positionedNodes.length > 0) {
+    // 按深度分組節點
+    const nodesByDepth = new Map<number, typeof positionedNodes>();
+    positionedNodes.forEach(node => {
+      const depth = node.data.depth as number;
+      if (!nodesByDepth.has(depth)) {
+        nodesByDepth.set(depth, []);
+      }
+      nodesByDepth.get(depth)!.push(node);
+    });
+
+    // 對每個深度層級進行 X 軸對齊
+    nodesByDepth.forEach((nodesAtDepth, depth) => {
+      if (nodesAtDepth.length > 1) {
+        // 計算該層級的統一 X 軸位置
+        let targetX: number;
+        
+        if (depth === 0) {
+          // 根節點：使用最左邊的位置
+          targetX = Math.min(...nodesAtDepth.map(n => n.position.x));
+        } else {
+          // 其他層級：根據布局方向決定 X 軸位置
+          if (dir === 'LR') {
+            // 水平布局：每個深度層級有固定的 X 軸位置
+            const baseX = Math.min(...positionedNodes.filter(n => n.data.depth === 0).map(n => n.position.x));
+            targetX = baseX + (depth * (nodeSize.width + ranksep));
+          } else {
+            // 垂直布局：同層級節點使用相同 X 軸（居中對齊）
+            const avgX = nodesAtDepth.reduce((sum, node) => sum + node.position.x, 0) / nodesAtDepth.length;
+            targetX = avgX;
+          }
+        }
+        
+        // 應用統一的 X 軸位置
+        nodesAtDepth.forEach(node => {
+          node.position.x = targetX;
+        });
+      }
+    });
+  }
 
   // 確保根節點位於最左上角，其他節點不能超越根節點的位置
   if (positionedNodes.length > 0) {
@@ -278,6 +323,26 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
   });
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
   const hasInitialized = useRef(false);
+  
+  // 視圖狀態持久化
+  const viewportKey = `tree-viewport-${data.id || 'default'}`;
+  const [viewport, setViewport] = useState<Viewport>(() => {
+    // 從 localStorage 載入已保存的視圖狀態
+    try {
+      const saved = localStorage.getItem(viewportKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // 驗證解析的數據結構是否正確
+        if (parsed && typeof parsed.x === 'number' && typeof parsed.y === 'number' && typeof parsed.zoom === 'number') {
+          return parsed;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load viewport state:', error);
+    }
+    // 預設視圖狀態
+    return { x: 0, y: 0, zoom: 1 };
+  });
   const nodeSize = useMemo(() => ({ width: nodeWidth, height: nodeHeight }), [nodeWidth, nodeHeight]);
   const [contextMenu, setContextMenu] = useState<{ visible: boolean; x: number; y: number; node: Node | null }>({ visible: false, x: 0, y: 0, node: null });
 
@@ -329,6 +394,38 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
       };
     }
   }, [isResizing, handleResizeMove, handleResizeEnd]);
+
+  // 節流的視圖狀態保存
+  const debouncedViewportSave = useCallback((newViewport: Viewport) => {
+    // 驗證新的 viewport 數據是否有效
+    if (newViewport && 
+        typeof newViewport.x === 'number' && 
+        typeof newViewport.y === 'number' && 
+        typeof newViewport.zoom === 'number' &&
+        !isNaN(newViewport.x) && 
+        !isNaN(newViewport.y) && 
+        !isNaN(newViewport.zoom)) {
+      console.log('[TreeDiagram] 保存視圖狀態:', newViewport);
+      setViewport(newViewport);
+    }
+  }, []);
+
+  // 實際保存到 localStorage（節流）
+  useEffect(() => {
+    // 跳過初始化時的保存
+    if (!hasInitialized.current) return;
+    
+    const timeoutId = setTimeout(() => {
+      try {
+        console.log('[TreeDiagram] 寫入 localStorage:', viewport);
+        localStorage.setItem(viewportKey, JSON.stringify(viewport));
+      } catch (error) {
+        console.warn('Failed to save viewport state:', error);
+      }
+    }, 500); // 500ms 後保存
+    
+    return () => clearTimeout(timeoutId);
+  }, [viewport, viewportKey]);
 
   useEffect(() => {
     const handleWindowClick = () => {
@@ -689,13 +786,53 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
   const initialNodes = nodes.map(n => ({ ...n, data: { ...n.data, rootId: data.id, direction } }));
   const edgeTypes = useMemo(() => ({ coloredSmooth: ColoredSmoothEdge }), []);
 
-  // 只在初始化時執行 fitView
+  // React Flow 初始化處理
   useEffect(() => {
     if (reactFlowInstance && !hasInitialized.current) {
-      reactFlowInstance.fitView({ padding: 0.1 });
+      try {
+        // 直接從 localStorage 讀取視圖狀態
+        const savedViewportStr = localStorage.getItem(viewportKey);
+        
+        if (savedViewportStr) {
+          const savedViewport = JSON.parse(savedViewportStr);
+          // 驗證數據有效性
+          if (savedViewport && 
+              typeof savedViewport.x === 'number' && 
+              typeof savedViewport.y === 'number' && 
+              typeof savedViewport.zoom === 'number') {
+            // 恢復保存的視圖狀態
+            console.log('[TreeDiagram] 恢復視圖狀態:', savedViewport);
+            // 延遲設置 viewport，確保 React Flow 已完全初始化
+            setTimeout(() => {
+              reactFlowInstance.setViewport(savedViewport);
+            }, 100);
+            hasInitialized.current = true;
+            return;
+          }
+        }
+        
+        // 首次訪問，使用 fitView
+        console.log('[TreeDiagram] 首次訪問，使用 fitView');
+        setTimeout(() => {
+          reactFlowInstance.fitView({ padding: 0.1 });
+        }, 100);
+      } catch (error) {
+        console.warn('Failed to initialize viewport:', error);
+        // 發生錯誤時，使用 fitView 作為後備方案
+        setTimeout(() => {
+          reactFlowInstance.fitView({ padding: 0.1 });
+        }, 100);
+      }
+      
       hasInitialized.current = true;
     }
-  }, [reactFlowInstance]);
+  }, [reactFlowInstance, viewportKey]);
+
+  // 處理視圖移動事件（Pan & Zoom）
+  const onMove = useCallback((_event: any, newViewport: Viewport) => {
+    console.log('[TreeDiagram] onMove 觸發:', newViewport);
+    debouncedViewportSave(newViewport);
+  }, [debouncedViewportSave]);
 
   const onInit = useCallback((instance: ReactFlowInstance) => {
     setReactFlowInstance(instance);
@@ -790,10 +927,12 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
           edgeTypes={edgeTypes}
           defaultEdgeOptions={{ type: 'coloredSmooth' }}
           onInit={onInit}
+          onMove={onMove}
           nodesDraggable={false}
           nodesConnectable={false}
           zoomOnScroll
           panOnScroll
+          defaultViewport={viewport}
           onPaneClick={() => {
             setSelectedNode(null);
             setIsEditing(false);
