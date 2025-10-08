@@ -95,7 +95,16 @@ function layoutTree(root: TreeNode, dir: 'LR' | 'TB', nodeSize = nodeDefaults) {
   // 垂直布局(TB)使用更大的垂直間距，水平布局(LR)使用更大的水平間距
   const nodesep = dir === 'TB' ? 50 : 40;
   const ranksep = dir === 'TB' ? 80 : 60;
-  g.setGraph({ rankdir: dir, nodesep, ranksep, marginx: 40, marginy: 40 });
+  // 增加邊距，為根節點在最左上角留出更多空間
+  g.setGraph({ 
+    rankdir: dir, 
+    nodesep, 
+    ranksep, 
+    marginx: 60, // 增加水平邊距
+    marginy: 60, // 增加垂直邊距
+    align: dir === 'TB' ? 'UL' : 'UL', // 對齊到左上角
+    ranker: 'longest-path' // 使用最長路徑排序，有助於保持層次結構
+  });
   g.setDefaultEdgeLabel(() => ({}));
 
   const nodes: Node[] = [];
@@ -142,6 +151,52 @@ function layoutTree(root: TreeNode, dir: 'LR' | 'TB', nodeSize = nodeDefaults) {
       data: { ...n.data },
     } as Node;
   });
+
+  // 確保根節點位於最左上角，其他節點不能超越根節點的位置
+  if (positionedNodes.length > 0) {
+    const rootNodeIndex = positionedNodes.findIndex(n => n.data.depth === 0);
+    if (rootNodeIndex !== -1) {
+      const rootNode = positionedNodes[rootNodeIndex];
+      
+      // 找到所有節點的最小 X 和 Y 座標
+      const minX = Math.min(...positionedNodes.map(n => n.position.x));
+      const minY = Math.min(...positionedNodes.map(n => n.position.y));
+      
+      // 計算需要的偏移量，確保根節點位於最左上角
+      const xOffset = rootNode.position.x - minX;
+      const yOffset = rootNode.position.y - minY;
+      
+      // 調整所有節點位置，讓根節點位於最左上角
+      positionedNodes.forEach(n => {
+        if (n.id === rootNode.id) {
+          // 根節點移到最左上角
+          n.position.x = minX;
+          n.position.y = minY;
+        } else {
+          // 其他節點相對向右下方移動
+          n.position.x += Math.abs(xOffset);
+          n.position.y += Math.abs(yOffset);
+        }
+      });
+      
+      // 額外的安全檢查：確保沒有節點位於根節點的上方或左方
+      const rootFinalX = rootNode.position.x;
+      const rootFinalY = rootNode.position.y;
+      
+      positionedNodes.forEach(n => {
+        if (n.id !== rootNode.id) {
+          // 確保 X 座標不小於根節點 X 座標
+          if (n.position.x < rootFinalX) {
+            n.position.x = rootFinalX + 50; // 最小間距 50px
+          }
+          // 確保 Y 座標不小於根節點 Y 座標
+          if (n.position.y < rootFinalY) {
+            n.position.y = rootFinalY + 50; // 最小間距 50px
+          }
+        }
+      });
+    }
+  }
 
   return { nodes: positionedNodes, edges };
 }
@@ -203,6 +258,8 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
   });
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [panelWidth, setPanelWidth] = useState(320); // 屬性面板寬度狀態
+  const [isResizing, setIsResizing] = useState(false); // 拖曳調整狀態
   const [editData, setEditData] = useState({
     nodeId: '',
     label: '',
@@ -227,12 +284,51 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
   const isPanelOpen = !!selectedNode;
 
   const containerStyle = useMemo(() => ({
-    gridTemplateColumns: `80px 1fr ${isPanelOpen ? '320px' : '0px'}`,
-  }), [isPanelOpen]);
+    gridTemplateColumns: `80px 1fr ${isPanelOpen ? `${panelWidth}px` : '0px'}`,
+  }), [isPanelOpen, panelWidth]);
 
   const closeContextMenu = useCallback(() => {
     setContextMenu({ visible: false, x: 0, y: 0, node: null });
   }, []);
+
+  // 拖曳調整面板寬度的處理函數
+  const handleResizeStart = useCallback((event: React.MouseEvent) => {
+    event.preventDefault();
+    setIsResizing(true);
+  }, []);
+
+  const handleResizeMove = useCallback((event: MouseEvent) => {
+    if (!isResizing) return;
+    
+    // 計算新的面板寬度（從右邊界向左拖曳）
+    const newWidth = window.innerWidth - event.clientX;
+    const minWidth = 250; // 最小寬度
+    const maxWidth = window.innerWidth * 0.5; // 最大寬度為螢幕寬度的50%
+    
+    const constrainedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+    setPanelWidth(constrainedWidth);
+  }, [isResizing]);
+
+  const handleResizeEnd = useCallback(() => {
+    setIsResizing(false);
+  }, []);
+
+  // 拖曳事件監聽器
+  useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleResizeMove);
+      document.addEventListener('mouseup', handleResizeEnd);
+      document.body.style.cursor = 'ew-resize';
+      document.body.style.userSelect = 'none';
+      
+      return () => {
+        document.removeEventListener('mousemove', handleResizeMove);
+        document.removeEventListener('mouseup', handleResizeEnd);
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      };
+    }
+  }, [isResizing, handleResizeMove, handleResizeEnd]);
 
   useEffect(() => {
     const handleWindowClick = () => {
@@ -557,7 +653,11 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
       };
 
       return (
-        <div className={`tree-node ${id === data.rootId ? 'root' : ''} ${isCollapsed ? 'collapsed' : ''}`} style={style}>
+        <div 
+          className={`tree-node ${id === data.rootId ? 'root' : ''} ${isCollapsed ? 'collapsed' : ''}`} 
+          style={style}
+          data-depth={depth}
+        >
           <Handle
             type="target"
             position={dir === 'LR' ? Position.Left : Position.Top}
@@ -707,6 +807,14 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
 
       {/* 右側屬性面板 */}
       <div className={`tree-sidebar-right ${isPanelOpen ? 'open' : 'collapsed'}`} aria-hidden={!isPanelOpen}>
+        {/* 拖曳調整寬度的手柄 */}
+        {isPanelOpen && (
+          <div 
+            className={`panel-resize-handle ${isResizing ? 'resizing' : ''}`}
+            onMouseDown={handleResizeStart}
+            title="拖曳調整面板寬度"
+          />
+        )}
         {isPanelOpen && selectedNode && (
           <div className="property-panel">
             <div className="property-panel-header">

@@ -67,6 +67,61 @@
 .tree-sidebar-right.open {
   opacity: 1;
   pointer-events: auto;
+  position: relative;
+}
+
+/* 面板寬度調整手柄 */
+.panel-resize-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: transparent;
+  cursor: ew-resize;
+  z-index: 20;
+  transition: all 0.2s ease;
+}
+
+/* 添加視覺指示器 */
+.panel-resize-handle::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 24px;
+  background: rgba(129, 140, 248, 0.3);
+  border-radius: 1px;
+  transition: all 0.2s ease;
+}
+
+.panel-resize-handle:hover {
+  background: rgba(129, 140, 248, 0.1);
+}
+
+.panel-resize-handle:hover::before {
+  background: rgba(129, 140, 248, 0.8);
+  height: 32px;
+}
+
+.panel-resize-handle:active {
+  background: rgba(99, 102, 241, 0.2);
+}
+
+.panel-resize-handle:active::before {
+  background: #6366f1;
+}
+
+/* 拖曳時的狀態 */
+.panel-resize-handle.resizing {
+  background: rgba(99, 102, 241, 0.2);
+}
+
+.panel-resize-handle.resizing::before {
+  background: #6366f1;
+  height: 40px;
 }
 
 .tree-context-menu {
@@ -429,7 +484,7 @@
   padding: 12px 20px;
   border: 2px solid currentColor;
   border-radius: 12px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   transition: all 0.2s ease;
@@ -437,7 +492,7 @@
   white-space: nowrap;
   overflow: visible;
   text-overflow: ellipsis;
-  min-width: 140px;
+  min-width: 160px;
   max-width: 100%;
   width: 100%;
   height: 100%;
@@ -461,6 +516,11 @@
   font-size: 14px;
   padding: 14px 24px;
   box-shadow: 0 4px 16px rgba(129, 140, 248, 0.4);
+  z-index: 10; /* 確保根節點在視覺層級上位於最上方 */
+  position: relative;
+  /* 額外的視覺強調，確保根節點最突出 */
+  border-style: solid;
+  background-color: rgba(129, 140, 248, 0.1) !important;
 }
 
 .tree-node.collapsed {
@@ -516,4 +576,9 @@
 
 .tree-diagram-flow .react-flow__nodes {
   z-index: 2;
+}
+
+/* 確保根節點在 React Flow 層級也位於最上方 */
+.tree-diagram-flow .react-flow__node[data-depth="0"] {
+  z-index: 10 !important;
 }
