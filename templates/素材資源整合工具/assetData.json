@@ -1,0 +1,677 @@
+[
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 368,
+      "y": 755
+    },
+    "CpCoordinate": {
+      "x": 339,
+      "y": 776
+    },
+    "OpCoordinate": {
+      "x": 339,
+      "y": 767
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 824,
+      "_left": 339,
+      "_right": 380,
+      "_top": 767
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 58,
+    "id": 17,
+    "kind": "text",
+    "name": "num_countdown/0.png",
+    "newBounds": {
+      "bottom": 825,
+      "left": 339,
+      "right": 381,
+      "top": 767
+    },
+    "opacity": 100,
+    "originHeight": 57,
+    "originWidth": 41,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": true,
+    "width": 42
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 370,
+      "y": 764
+    },
+    "CpCoordinate": {
+      "x": 342,
+      "y": 777
+    },
+    "OpCoordinate": {
+      "x": 342,
+      "y": 768
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 823,
+      "_left": 342,
+      "_right": 367,
+      "_top": 768
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 56,
+    "id": 16,
+    "kind": "text",
+    "name": "num_countdown/1.png",
+    "newBounds": {
+      "bottom": 824,
+      "left": 342,
+      "right": 368,
+      "top": 768
+    },
+    "opacity": 100,
+    "originHeight": 55,
+    "originWidth": 25,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 26
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 368,
+      "y": 756
+    },
+    "CpCoordinate": {
+      "x": 339,
+      "y": 777
+    },
+    "OpCoordinate": {
+      "x": 339,
+      "y": 767
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 823,
+      "_left": 339,
+      "_right": 380,
+      "_top": 767
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 58,
+    "id": 15,
+    "kind": "text",
+    "name": "num_countdown/2.png",
+    "newBounds": {
+      "bottom": 825,
+      "left": 339,
+      "right": 381,
+      "top": 767
+    },
+    "opacity": 100,
+    "originHeight": 56,
+    "originWidth": 41,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 42
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 368,
+      "y": 755
+    },
+    "CpCoordinate": {
+      "x": 339,
+      "y": 776
+    },
+    "OpCoordinate": {
+      "x": 339,
+      "y": 767
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 824,
+      "_left": 339,
+      "_right": 380,
+      "_top": 767
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 58,
+    "id": 14,
+    "kind": "text",
+    "name": "num_countdown/3.png",
+    "newBounds": {
+      "bottom": 825,
+      "left": 339,
+      "right": 381,
+      "top": 767
+    },
+    "opacity": 100,
+    "originHeight": 57,
+    "originWidth": 41,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 42
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 367,
+      "y": 756
+    },
+    "CpCoordinate": {
+      "x": 339,
+      "y": 777
+    },
+    "OpCoordinate": {
+      "x": 339,
+      "y": 768
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 823,
+      "_left": 339,
+      "_right": 380,
+      "_top": 768
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 56,
+    "id": 13,
+    "kind": "text",
+    "name": "num_countdown/4.png",
+    "newBounds": {
+      "bottom": 824,
+      "left": 339,
+      "right": 381,
+      "top": 768
+    },
+    "opacity": 100,
+    "originHeight": 55,
+    "originWidth": 41,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 42
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 368,
+      "y": 754
+    },
+    "CpCoordinate": {
+      "x": 339,
+      "y": 776
+    },
+    "OpCoordinate": {
+      "x": 339,
+      "y": 768
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 824,
+      "_left": 339,
+      "_right": 381,
+      "_top": 768
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 58,
+    "id": 12,
+    "kind": "text",
+    "name": "num_countdown/5.png",
+    "newBounds": {
+      "bottom": 826,
+      "left": 339,
+      "right": 383,
+      "top": 768
+    },
+    "opacity": 100,
+    "originHeight": 56,
+    "originWidth": 42,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 44
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 368,
+      "y": 755
+    },
+    "CpCoordinate": {
+      "x": 339,
+      "y": 776
+    },
+    "OpCoordinate": {
+      "x": 339,
+      "y": 767
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 824,
+      "_left": 339,
+      "_right": 380,
+      "_top": 767
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 58,
+    "id": 11,
+    "kind": "text",
+    "name": "num_countdown/6.png",
+    "newBounds": {
+      "bottom": 825,
+      "left": 339,
+      "right": 381,
+      "top": 767
+    },
+    "opacity": 100,
+    "originHeight": 57,
+    "originWidth": 41,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 42
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 367,
+      "y": 756
+    },
+    "CpCoordinate": {
+      "x": 339,
+      "y": 777
+    },
+    "OpCoordinate": {
+      "x": 339,
+      "y": 768
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 823,
+      "_left": 339,
+      "_right": 380,
+      "_top": 768
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 56,
+    "id": 10,
+    "kind": "text",
+    "name": "num_countdown/7.png",
+    "newBounds": {
+      "bottom": 824,
+      "left": 339,
+      "right": 381,
+      "top": 768
+    },
+    "opacity": 100,
+    "originHeight": 55,
+    "originWidth": 41,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 42
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 368,
+      "y": 755
+    },
+    "CpCoordinate": {
+      "x": 339,
+      "y": 776
+    },
+    "OpCoordinate": {
+      "x": 339,
+      "y": 767
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 824,
+      "_left": 339,
+      "_right": 380,
+      "_top": 767
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 58,
+    "id": 9,
+    "kind": "text",
+    "name": "num_countdown/8.png",
+    "newBounds": {
+      "bottom": 825,
+      "left": 339,
+      "right": 381,
+      "top": 767
+    },
+    "opacity": 100,
+    "originHeight": 57,
+    "originWidth": 41,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 42
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 368,
+      "y": 755
+    },
+    "CpCoordinate": {
+      "x": 339,
+      "y": 776
+    },
+    "OpCoordinate": {
+      "x": 339,
+      "y": 767
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 824,
+      "_left": 339,
+      "_right": 380,
+      "_top": 767
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 58,
+    "id": 8,
+    "kind": "text",
+    "name": "num_countdown/9.png",
+    "newBounds": {
+      "bottom": 825,
+      "left": 339,
+      "right": 381,
+      "top": 767
+    },
+    "opacity": 100,
+    "originHeight": 57,
+    "originWidth": 41,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 42
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 364,
+      "y": 760
+    },
+    "CpCoordinate": {
+      "x": 353,
+      "y": 767
+    },
+    "OpCoordinate": {
+      "x": 353,
+      "y": 812
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 833,
+      "_left": 353,
+      "_right": 366,
+      "_top": 812
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 22,
+    "id": 7,
+    "kind": "text",
+    "name": "num_countdown/comma.png",
+    "newBounds": {
+      "bottom": 834,
+      "left": 353,
+      "right": 367,
+      "top": 812
+    },
+    "opacity": 100,
+    "originHeight": 21,
+    "originWidth": 13,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 14
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 361,
+      "y": 770
+    },
+    "CpCoordinate": {
+      "x": 354,
+      "y": 777
+    },
+    "OpCoordinate": {
+      "x": 354,
+      "y": 811
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 823,
+      "_left": 354,
+      "_right": 366,
+      "_top": 811
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 14,
+    "id": 6,
+    "kind": "text",
+    "name": "num_countdown/point.png",
+    "newBounds": {
+      "bottom": 825,
+      "left": 354,
+      "right": 368,
+      "top": 811
+    },
+    "opacity": 100,
+    "originHeight": 12,
+    "originWidth": 12,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 14
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 362,
+      "y": 750
+    },
+    "CpCoordinate": {
+      "x": 334,
+      "y": 777
+    },
+    "OpCoordinate": {
+      "x": 334,
+      "y": 768
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 823,
+      "_left": 334,
+      "_right": 386,
+      "_top": 768
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 56,
+    "id": 5,
+    "kind": "text",
+    "name": "num_countdown/m.png",
+    "newBounds": {
+      "bottom": 824,
+      "left": 334,
+      "right": 388,
+      "top": 768
+    },
+    "opacity": 100,
+    "originHeight": 55,
+    "originWidth": 52,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 54
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 367,
+      "y": 754
+    },
+    "CpCoordinate": {
+      "x": 339,
+      "y": 777
+    },
+    "OpCoordinate": {
+      "x": 339,
+      "y": 768
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 823,
+      "_left": 339,
+      "_right": 383,
+      "_top": 768
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 56,
+    "id": 4,
+    "kind": "text",
+    "name": "num_countdown/b.png",
+    "newBounds": {
+      "bottom": 824,
+      "left": 339,
+      "right": 385,
+      "top": 768
+    },
+    "opacity": 100,
+    "originHeight": 55,
+    "originWidth": 44,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 46
+  },
+  {
+    "AP": {
+      "px": 0.5,
+      "py": 0.5
+    },
+    "ApCoordinate": {
+      "x": 363,
+      "y": 751
+    },
+    "CpCoordinate": {
+      "x": 335,
+      "y": 777
+    },
+    "OpCoordinate": {
+      "x": 335,
+      "y": 768
+    },
+    "assetType": "",
+    "blendMode": "normal",
+    "bounds": {
+      "_bottom": 823,
+      "_left": 335,
+      "_right": 385,
+      "_top": 768
+    },
+    "depth": 1,
+    "depthID": 0,
+    "height": 56,
+    "id": 3,
+    "kind": "text",
+    "name": "num_countdown/x.png",
+    "newBounds": {
+      "bottom": 824,
+      "left": 335,
+      "right": 387,
+      "top": 768
+    },
+    "opacity": 100,
+    "originHeight": 55,
+    "originWidth": 50,
+    "parent": "num_countdown_出圖",
+    "parentFolder": "none",
+    "visible": false,
+    "width": 52
+  }
+]

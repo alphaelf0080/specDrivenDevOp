@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Web Game Packet Monitor - 架構與使用指南</title>
+  <style>
+    :root {
+      --bg-grad: linear-gradient(135deg,#141e30 0%,#243b55 100%);
+      --panel-bg: #1f2530;
+      --panel-accent: #2b3240;
+      --accent: #5c8df6;
+      --accent-grad: linear-gradient(135deg,#5c8df6,#7f53ff 60%,#b846ff);
+      --danger: #e57373;
+      --ok: #6dd47e;
+      --warn: #ffb347;
+      --radius: 14px;
+      --text-light: #d5dae3;
+      --text-dim: #9aa2b1;
+      --grid-gap: 18px;
+      --mono: 'JetBrains Mono','Consolas','Courier New',monospace;
+      font-family: 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg-grad); color: var(--text-light); line-height: 1.55; -webkit-font-smoothing: antialiased;
+    }
+    a { color: #8ab4ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    h1,h2,h3 { font-weight:600; line-height:1.25; letter-spacing:.5px; }
+  h1 { font-size: clamp(2rem,4vw,3rem); margin:.2em 0 .4em; background: var(--accent-grad); background-clip: text; -webkit-background-clip: text; color:transparent; }
+    h2 { margin:0 0 .75em; font-size: clamp(1.5rem,2.4vw,2.1rem); position:relative; }
+    h2::after { content:""; position:absolute; left:0; bottom:-6px; width:64px; height:4px; background: var(--accent-grad); border-radius:2px; }
+    h3 { margin:1.6em 0 .6em; font-size:1.25rem; }
+
+    .container { width:min(1420px,92%); margin:0 auto; padding:40px 0 70px; }
+    .top-nav { text-align:center; margin:-10px 0 30px; }
+    .top-nav a { display:inline-block; padding:8px 18px; margin:4px 6px; border-radius:30px; background:#2b3342; font-size:.9rem; letter-spacing:.5px; text-transform:uppercase; font-weight:600; }
+    .top-nav a.active { background: var(--accent-grad); color:#fff; box-shadow:0 4px 18px -4px #5c8df699; }
+
+    .grid { display:grid; gap: var(--grid-gap); }
+    .cols-3 { grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); }
+    .cols-2 { grid-template-columns: repeat(auto-fit,minmax(420px,1fr)); }
+
+    .panel { background: var(--panel-bg); border:1px solid #323c4b; border-radius: var(--radius); padding:28px 26px 30px; position:relative; overflow:hidden; }
+    .panel::before { content:""; position:absolute; inset:0; background: radial-gradient(circle at 85% 15%,#ffffff10,transparent 60%); pointer-events:none; }
+    .panel h3:first-child { margin-top:0; }
+
+    .tag { display:inline-flex; align-items:center; gap:4px; padding:4px 10px 4px 8px; border-radius:40px; font-size:.7rem; letter-spacing:.5px; font-weight:600; background:#334155; color:#bcd3ff; text-transform:uppercase; }
+    .tag.gradient { background: var(--accent-grad); color:#fff; }
+    .tag.warn { background:#62501d; color:#f7d87d; }
+    .tag.danger { background:#552a2a; color:#ffb2b2; }
+
+    .architecture-diagram { background:#101620; border:1px solid #2d3746; border-radius: var(--radius); padding:34px 26px 30px; margin:10px 0 35px; position:relative; }
+    .architecture-diagram h2 { margin-top:0; }
+
+    .diagram-wrapper { position:relative; width:100%; overflow-x:auto; padding:10px 0 8px; }
+    svg.arch-svg { width:1200px; max-width:none; height:540px; font-family: var(--mono); }
+    .legend { display:flex; gap:14px; flex-wrap:wrap; margin:12px 0 4px; }
+    .legend-item { display:flex; align-items:center; gap:6px; font-size:.75rem; opacity:.85; }
+    .legend-color { width:20px; height:12px; border-radius:4px; }
+
+    table { width:100%; border-collapse: collapse; font-size:.9rem; margin:16px 0 28px; }
+    table thead { background:#2c3644; }
+    th,td { padding:10px 14px; text-align:left; vertical-align:top; border:1px solid #374456; }
+    tbody tr { background:#1f2732; }
+    tbody tr:nth-child(even) { background:#232e3b; }
+    tbody tr:hover { background:#2d3949; }
+    th { font-weight:600; letter-spacing:.5px; font-size:.75rem; text-transform:uppercase; color:#c7d2e4; }
+    caption { text-align:left; font-weight:600; margin:0 0 6px; color:#9fb7d6; font-size:.8rem; letter-spacing:1px; }
+
+    details { background:#233140; border:1px solid #324152; border-radius:10px; padding:14px 18px; margin:14px 0; }
+    summary { cursor:pointer; font-weight:600; color:#bcd3ff; }
+    summary::-webkit-details-marker { display:none; }
+
+    code,pre { font-family: var(--mono); font-size:.75rem; background:#111820; color:#d5ecff; border:1px solid #3a4757; border-radius:8px; padding:14px 16px; overflow-x:auto; line-height:1.55; }
+    pre { margin:18px 0 26px; }
+
+    .kv-table { display:grid; grid-template-columns: 170px 1fr; gap:6px 22px; font-size:.85rem; }
+    .kv-table div.key { font-weight:600; color:#8fb4ff; text-align:right; }
+    .kv-table div.val { color:#d8deea; }
+
+    .inline-badge { background:#304058; color:#b9cfe8; padding:3px 8px 4px; border-radius:8px; font-size:.65rem; letter-spacing:.5px; font-weight:600; }
+    .inline-badge.flow { background:#283d5d; color:#9ec6ff; }
+
+    .flow-steps { counter-reset: stp; margin:10px 0 30px; }
+    .flow-steps li { list-style:none; position:relative; margin:20px 0 20px 46px; background:#1d2631; border:1px solid #2e3947; padding:16px 18px 16px 20px; border-radius:12px; }
+    .flow-steps li::before { counter-increment: stp; content: counter(stp); position:absolute; left:-43px; top:50%; transform:translateY(-50%); width:56px; height:56px; background: var(--accent-grad); display:flex; align-items:center; justify-content:center; font-weight:700; border-radius:18px; font-size:1.1rem; box-shadow:0 6px 22px -6px #5c8df6aa; }
+
+    .filters { display:flex; flex-wrap:wrap; gap:10px; margin:10px 0 24px; }
+    .filters button { background:#2c3544; border:1px solid #3a4656; color:#c4d2e2; padding:8px 14px 9px; border-radius:10px; cursor:pointer; font-size:.75rem; letter-spacing:.75px; font-weight:600; text-transform:uppercase; }
+    .filters button.active { background: var(--accent-grad); color:#fff; border:1px solid #6e8fff; }
+    .filters button:hover:not(.active) { background:#384354; }
+
+    .asset-card-grid { display:grid; gap:16px; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); }
+    .asset-card { background:#203040; border:1px solid #314255; padding:14px 16px 18px; border-radius:12px; display:flex; flex-direction:column; gap:6px; position:relative; }
+    .asset-card h4 { margin:0 0 2px; font-size:.95rem; font-weight:600; letter-spacing:.5px; }
+    .asset-card small { color:#aab7c7; font-size:.65rem; letter-spacing:.5px; text-transform:uppercase; }
+    .asset-card .pill-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+    .pill { background:#31475e; color:#b6cde6; padding:4px 8px 5px; font-size:.6rem; border-radius:30px; font-weight:600; letter-spacing:.5px; }
+    .pill.method { background:#3d3454; color:#ddb9ff; }
+    .pill.size { background:#364f3d; color:#b9f6d0; }
+    .pill.meta { background:#554731; color:#ffdca8; }
+
+    .search-box { margin:16px 0 10px; }
+    .search-box input { width:100%; background:#1a2330; border:1px solid #324051; padding:14px 16px; border-radius:12px; font-size:.85rem; color:#d6dde8; outline:none; }
+    .search-box input:focus { border-color:#4c6fb2; box-shadow:0 0 0 3px #4c6fb244; }
+
+    .note { background:#2c3645; border-left:5px solid #6d9bff; padding:16px 18px 18px; border-radius:6px; margin:24px 0; }
+    .note.warn { border-left-color:#ffb347; }
+
+    form.inline-form { display:grid; gap:14px 18px; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); margin:4px 0 28px; }
+    form.inline-form label { display:flex; flex-direction:column; gap:6px; font-size:.65rem; text-transform:uppercase; letter-spacing:.75px; font-weight:600; color:#9db4d3; }
+    form.inline-form select, form.inline-form input { background:#19202b; color:#d6dde9; border:1px solid #324051; border-radius:10px; padding:10px 12px 11px; font-size:.85rem; }
+
+    footer { margin-top:70px; text-align:center; font-size:.7rem; letter-spacing:.75px; opacity:.6; }
+
+    @media (max-width:960px) {
+      svg.arch-svg { width:1440px; }
+      .architecture-diagram { padding:26px 20px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-nav">
+      <a href="documentation.html">使用手冊</a>
+      <a class="active" href="architecture.html">架構指南</a>
+    </div>
+    <header>
+      <h1>⚙️ 架構與使用指南</h1>
+      <p style="max-width:880px; font-size:1.02rem; color:var(--text-dim); line-height:1.7">本文件深入解析 Web Game Packet Monitor 的內部架構、資料流、資源攔截策略與資料結構，並提供互動式查詢、表格化說明與圖形化視覺輔助，協助開發者快速理解與擴充。</p>
+    </header>
+
+    <section class="architecture-diagram">
+      <h2>系統總覽架構圖</h2>
+      <p style="color:#93b4db; font-size:.9rem; margin:4px 0 18px">顯示 MV3 架構下各模組互動：背景服務、內容腳本、注入腳本、UI、資源攔截與資料彙整。</p>
+      <div class="diagram-wrapper">
+        <svg class="arch-svg" viewBox="0 0 1200 540" aria-label="Architecture Diagram">
+          <defs>
+            <linearGradient id="gradBg" x1="0%" y1="0%" x2="100%" y2="120%">
+              <stop offset="0%" stop-color="#415a9c" />
+              <stop offset="75%" stop-color="#703399" />
+            </linearGradient>
+            <linearGradient id="gradData" x1="0%" y1="0%" x2="100%" y2="120%">
+              <stop offset="0%" stop-color="#2a7753" />
+              <stop offset="80%" stop-color="#49aa7c" />
+            </linearGradient>
+            <linearGradient id="gradUI" x1="0%" y1="0%" x2="100%" y2="120%">
+              <stop offset="0%" stop-color="#8c5cff" />
+              <stop offset="85%" stop-color="#cf3cff" />
+            </linearGradient>
+            <linearGradient id="gradIntercept" x1="0%" y1="0%" x2="100%" y2="120%">
+              <stop offset="0%" stop-color="#c17a1b" />
+              <stop offset="90%" stop-color="#ffb347" />
+            </linearGradient>
+            <style>
+              .comp { paint-order:stroke; stroke-width:2; stroke:#1b2534; }
+              .label { font: 14px var(--mono); fill:#dbe7ff; }
+              .small { font: 11px var(--mono); fill:#b4c3da; }
+              .arrow { stroke:#7ea8ff; stroke-width:2; marker-end:url(#arrowHead); fill:none; }
+              .arrow2 { stroke:#3dd38d; stroke-width:2; marker-end:url(#arrowHead2); fill:none; stroke-dasharray:5 6; }
+              .arrow3 { stroke:#ffb347; stroke-width:2; marker-end:url(#arrowHead3); fill:none; stroke-dasharray:6 7; }
+            </style>
+            <marker id="arrowHead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+              <path d="M0,0 L8,3 L0,6 Z" fill="#7ea8ff" />
+            </marker>
+            <marker id="arrowHead2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+              <path d="M0,0 L8,3 L0,6 Z" fill="#3dd38d" />
+            </marker>
+            <marker id="arrowHead3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+              <path d="M0,0 L8,3 L0,6 Z" fill="#ffb347" />
+            </marker>
+          </defs>
+          <!-- Background Service -->
+          <rect x="40" y="60" width="230" height="170" rx="18" class="comp" fill="url(#gradBg)" />
+          <text x="62" y="96" class="label">background.js</text>
+          <text x="62" y="122" class="small">webRequest listener</text>
+          <text x="62" y="142" class="small">state aggregation</text>
+          <text x="62" y="162" class="small">downloads / export</text>
+
+          <!-- Content Script -->
+          <rect x="340" y="40" width="210" height="150" rx="16" class="comp" fill="url(#gradIntercept)" />
+          <text x="360" y="78" class="label">content.js</text>
+          <text x="360" y="104" class="small">inject inject.js</text>
+          <text x="360" y="124" class="small">bridge window→extension</text>
+
+          <!-- Inject Script -->
+          <rect x="340" y="230" width="210" height="160" rx="16" class="comp" fill="url(#gradIntercept)" />
+          <text x="360" y="270" class="label">inject.js</text>
+          <text x="360" y="296" class="small">monkey patch</text>
+          <text x="360" y="316" class="small">fetch / XHR</text>
+          <text x="360" y="336" class="small">resource meta</text>
+
+          <!-- Data Model -->
+          <rect x="610" y="80" width="210" height="170" rx="18" class="comp" fill="url(#gradData)" />
+          <text x="632" y="118" class="label">packetData Model</text>
+          <text x="632" y="144" class="small">type buckets</text>
+          <text x="632" y="164" class="small">total aggregator</text>
+          <text x="632" y="184" class="small">unpacked sizes</text>
+
+          <!-- Performance Modules -->
+          <rect x="880" y="60" width="250" height="140" rx="18" class="comp" fill="url(#gradData)" />
+          <text x="900" y="98" class="label">fps-meter.js</text>
+          <text x="900" y="122" class="small">rAF sampling</text>
+          <text x="900" y="142" class="small">avg smoothing</text>
+          <text x="1030" y="98" class="label">load-timer.js</text>
+          <text x="1030" y="122" class="small">network idle detect</text>
+          <text x="1030" y="142" class="small">final loadTime</text>
+
+          <!-- Popup UI -->
+          <rect x="880" y="240" width="250" height="180" rx="18" class="comp" fill="url(#gradUI)" />
+          <text x="900" y="276" class="label">popup.html / js</text>
+          <text x="900" y="302" class="small">render metrics</text>
+          <text x="900" y="322" class="small">user actions</text>
+          <text x="900" y="342" class="small">export / download</text>
+
+          <!-- Arrows (message flow) -->
+          <path d="M270 140 L340 115" class="arrow" />
+          <path d="M270 160 L340 300" class="arrow" />
+          <path d="M550 115 L610 150" class="arrow" />
+          <path d="M550 300 L610 200" class="arrow3" />
+          <path d="M820 165 L880 150" class="arrow2" />
+          <path d="M820 210 L880 300" class="arrow" />
+          <path d="M1030 240 L1030 200" class="arrow" />
+          <path d="M820 230 L880 250" class="arrow2" />
+          <path d="M270 200 L880 360" class="arrow3" />
+
+          <!-- Labels -->
+          <text x="290" y="134" class="small">inject request</text>
+          <text x="292" y="192" class="small">asset events</text>
+          <text x="585" y="110" class="small">update</text>
+          <text x="575" y="290" class="small">raw capture</text>
+          <text x="820" y="155" class="small">perf metrics</text>
+          <text x="822" y="205" class="small">state → UI</text>
+          <text x="1038" y="228" class="small">finalize</text>
+        </svg>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-color" style="background:#415a9c"></span><span>核心背景邏輯</span></div>
+        <div class="legend-item"><span class="legend-color" style="background:#c17a1b"></span><span>攔截 / 注入層</span></div>
+        <div class="legend-item"><span class="legend-color" style="background:#2a7753"></span><span>資料模型與計算</span></div>
+        <div class="legend-item"><span class="legend-color" style="background:#8c5cff"></span><span>UI 呈現</span></div>
+        <div class="legend-item"><span class="legend-color" style="background:#7ea8ff"></span><span>狀態同步</span></div>
+        <div class="legend-item"><span class="legend-color" style="background:#3dd38d"></span><span>性能資料</span></div>
+        <div class="legend-item"><span class="legend-color" style="background:#ffb347"></span><span>資源事件</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>資料流流程 (Flow)</h2>
+      <ol class="flow-steps">
+        <li><strong>啟動監控</strong>：使用者於 popup 點擊開始 → background 初始化 packetData、狀態與計時器。</li>
+        <li><strong>腳本注入</strong>：content.js 將 inject.js 注入頁面主世界 (防止沙箱隔離)。</li>
+        <li><strong>API 攔截</strong>：inject.js 透過 monkey patch 監聽 fetch / XHR，構造資源事件。</li>
+        <li><strong>事件轉發</strong>：頁面 window.postMessage → content.js → chrome.runtime.sendMessage → background.js。</li>
+        <li><strong>網絡層補強</strong>：background.js 以 webRequest 取得 Content-Length、MIME 類型，與事件合併。</li>
+        <li><strong>資料聚合</strong>：更新 packetData 各檔案桶 (type bucket)、總大小、未壓縮估算欄位。</li>
+        <li><strong>性能採樣</strong>：fps-meter.js 以 rAF 估算 FPS；load-timer.js 監聽網絡空閒計算 loadTime。</li>
+        <li><strong>UI 更新</strong>：popup.js 請求最新狀態並以增量方式渲染。</li>
+        <li><strong>下載 / 導出</strong>：使用者觸發下載資源或 JSON 導出 → background 實作壓縮/格式化。</li>
+        <li><strong>停止</strong>：釋放監聽、清除計時器、可選擇重置 packetData。</li>
+      </ol>
+    </section>
+
+    <section class="panel">
+      <h2>核心資料結構 packetData</h2>
+      <div class="kv-table" style="margin-bottom:14px">
+        <div class="key">total</div><div class="val">Number：所有類型加總 (Bytes)</div>
+        <div class="key">[type].size</div><div class="val">Number：該類型下載大小</div>
+        <div class="key">[type].unpackedSize</div><div class="val">Number：對某些壓縮/二進位資源擴展估算 (js/wasm/bin/glb 等)</div>
+        <div class="key">[type].assets[]</div><div class="val">Array：個別資源條目</div>
+      </div>
+      <pre>{
+  total: 5342123,
+  js: { size: 1523412, unpackedSize: 4012300, assets: [ { url, size, mime, timing, entryType } ] },
+  png: { size: 823411, assets: [ ... ] },
+  wasm: { size: 334000, unpackedSize: 1670000, assets: [ ... ] },
+  // ...其他類型
+}</pre>
+      <details>
+        <summary>資源物件欄位說明</summary>
+        <table>
+          <thead><tr><th>欄位</th><th>型別</th><th>來源</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>url</td><td>String</td><td>fetch/XHR/webRequest</td><td>資源請求的最終 URL</td></tr>
+            <tr><td>size</td><td>Number</td><td>Content-Length 或回推</td><td>實際傳輸大小 (Bytes)</td></tr>
+            <tr><td>mime</td><td>String</td><td>response headers</td><td>MIME 類型推斷</td></tr>
+            <tr><td>type</td><td>String</td><td>副檔名解析</td><td>分類 bucket key</td></tr>
+            <tr><td>unpacked</td><td>Number?</td><td>啟發式/估算</td><td>未壓縮大小 (如 wasm)</td></tr>
+            <tr><td>timestamp</td><td>Number</td><td>Date.now()</td><td>捕捉時間點</td></tr>
+            <tr><td>initiator</td><td>String</td><td>webRequest / 堆疊</td><td>啟動來源類型 (script / img)</td></tr>
+            <tr><td>method</td><td>String</td><td>fetch/XHR/webRequest</td><td>HTTP 方法</td></tr>
+          </tbody>
+        </table>
+      </details>
+    </section>
+
+    <section class="panel">
+      <h2>訊息通訊與事件</h2>
+      <table>
+        <caption>Message / Event Channels</caption>
+        <thead>
+          <tr><th>來源 → 目標</th><th>事件/命令</th><th>資料格式</th><th>目的</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>popup → background</td><td>startMonitoring</td><td>{ tabId }</td><td>初始化監控並重置狀態</td></tr>
+          <tr><td>popup → background</td><td>stopMonitoring</td><td>{}</td><td>停止所有監控行為</td></tr>
+          <tr><td>popup → background</td><td>exportJson</td><td>{ includeUnpacked }</td><td>導出 JSON 資料</td></tr>
+          <tr><td>popup → background</td><td>downloadAssets</td><td>{ filters }</td><td>啟動批次資源下載</td></tr>
+          <tr><td>inject(window) → content</td><td>ASSET_INTERCEPTED</td><td>{ asset }</td><td>通知新資源捕捉</td></tr>
+          <tr><td>content → background</td><td>assetIntercepted</td><td>{ asset }</td><td>轉交資源資訊</td></tr>
+          <tr><td>background → popup</td><td>stateUpdate</td><td>{ packetData, fps, loadTime }</td><td>同步最新狀態</td></tr>
+          <tr><td>fps-meter → background</td><td>fpsSample</td><td>{ fps }</td><td>更新 FPS 緩存</td></tr>
+          <tr><td>load-timer → background</td><td>finalLoad</td><td>{ loadTime }</td><td>確立最終載入時間</td></tr>
+        </tbody>
+      </table>
+      <pre>// Example: ASSET_INTERCEPTED payload
+{
+  type: 'ASSET_INTERCEPTED',
+  asset: {
+    url: 'https://game.example.com/assets/hero.glb',
+    size: 152340,
+    type: 'glb',
+    method: 'GET',
+    timestamp: 1735555555555
+  }
+}</pre>
+    </section>
+
+    <section class="panel">
+      <h2>權限 (Permissions)</h2>
+      <table>
+        <thead><tr><th>Permission</th><th>用途</th><th>安全考量</th><th>限制策略</th></tr></thead>
+        <tbody>
+          <tr><td>webRequest</td><td>擷取 Content-Length / 請求資訊</td><td>可能檢視所有請求 metadata</td><td>僅讀取 header，不儲存敏感內容</td></tr>
+          <tr><td>activeTab</td><td>對使用者互動中的頁面注入</td><td>避免未授權頁面操作</td><td>使用者主動觸發才能啟動</td></tr>
+          <tr><td>scripting</td><td>注入 inject.js</td><td>可能修改頁面行為</td><td>只注入必要攔截程式碼</td></tr>
+          <tr><td>downloads</td><td>批次下載資源</td><td>自動產生檔案</td><td>僅在用戶明確操作下執行</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel" id="asset-types">
+      <h2>素材取得方式與類型對照</h2>
+      <p style="color:#a7bed8; font-size:.92rem; margin-top:-4px">此區呈現「素材 (資源) 類型」與「取得方式」、大小判定策略與額外欄位。可透過篩選與搜尋快速定位。</p>
+      <div class="filters" id="assetFilterButtons"></div>
+      <div class="search-box"><input id="assetSearch" type="text" placeholder="輸入關鍵字過濾 (e.g. wasm / 圖片 / 字體)" /></div>
+      <div class="asset-card-grid" id="assetCards"></div>
+      <details style="margin-top:24px">
+        <summary>表格式匯總 (點擊展開)</summary>
+        <table>
+          <thead>
+            <tr><th>類型</th><th>分類</th><th>取得方式(Primary)</th><th>備援資料來源</th><th>大小策略</th><th>Meta/特性</th></tr>
+          </thead>
+          <tbody id="assetSummaryTable"></tbody>
+        </table>
+      </details>
+      <div class="note warn"><strong>注意：</strong> 未含動態壓縮比推算 (例如 gzip → 解壓實際大小)，但對 wasm / js / bin 類型提供啟發式 <em>unpackedSize</em> 欄位。</div>
+    </section>
+
+    <section class="panel">
+      <h2>互動式資源查詢 (Form)</h2>
+      <form class="inline-form" id="queryForm" onsubmit="return false;">
+        <label>資源類型
+          <select id="qType"></select>
+        </label>
+        <label>最小大小 (KB)
+          <input id="qMin" type="number" min="0" placeholder="0" />
+        </label>
+        <label>最大大小 (KB)
+          <input id="qMax" type="number" min="0" placeholder="不限" />
+        </label>
+        <label>關鍵字 (URL)
+          <input id="qKeyword" type="text" placeholder="hero / atlas / bgm" />
+        </label>
+      </form>
+      <div id="queryResult" style="font-size:.8rem; color:#9fb7d3">(此為示意：實際執行時 popup.js 會請 background 拉取即時結果)</div>
+      <pre id="queryPreview" style="display:none"></pre>
+      <div class="note"><strong>提示：</strong> 在真實擴充中，可將上述表單轉為對 background 發送過濾指令以取得局部子集，減少 UI 重繪成本。</div>
+    </section>
+
+    <section class="panel">
+      <h2>性能與優化點</h2>
+      <ul style="margin:6px 0 0 20px; padding:0; line-height:1.8;">
+        <li><strong>增量更新策略：</strong> popup 開啟期間，僅推送差異或採用請求式輪詢，避免持續 message flood。</li>
+        <li><strong>分類桶聚合：</strong> 減少 UI 計算；背景集中維護。</li>
+        <li><strong>rAF 平滑：</strong> FPS 以移動平均 (EMA) 或固定窗口平滑波動。</li>
+        <li><strong>Network Idle 判定：</strong> 設定短延遲計時器 (e.g. 500ms 無新請求) 產生最終 loadTime。</li>
+        <li><strong>延遲壓縮：</strong> 資源下載壓縮 (ZIP) 僅於使用者操作時進行。</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>安全與隱私考量</h2>
+      <ul style="margin:4px 0 0 20px; line-height:1.75;">
+        <li><strong>本地資料處理：</strong> 不上傳任何封包資訊至外部伺服器。</li>
+        <li><strong>最小權限：</strong> 僅使用必要 API；未使用 storage 長期保存。</li>
+        <li><strong>縮限注入範圍：</strong> 僅作用於使用者主動監控的分頁。</li>
+        <li><strong>不收集敏感內容：</strong> 只捕捉 metadata 與大小，不解析業務資料。</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>擴充與延伸建議</h2>
+      <ul style="margin:4px 0 0 20px; line-height:1.75;">
+        <li>加入 <code>IndexedDB</code> 做歷史趨勢存檔。</li>
+        <li>提供 <code>瀏覽器行為指標 (TTFP, TBT, CLS)</code> 的延伸分析。</li>
+        <li>新增 <code>Service Worker</code> 資源攔截分析。</li>
+        <li>導出 <code>HAR</code> 或轉換成瀏覽器開發者工具兼容格式。</li>
+        <li>WebAssembly 進行更精準的解壓大小估算。</li>
+      </ul>
+    </section>
+
+    <footer>
+      Web Game Packet Monitor Architecture • Generated 2025 • 專為前端效能與遊戲資源分析設計
+    </footer>
+  </div>
+
+  <script>
+    // --- 資料：素材類型對照 ---
+    const assetTypeDefinitions = [
+      { key:'js', name:'JavaScript', category:'程式碼', method:'webRequest + fetch patch', backup:'XHR 事件', sizeStrategy:'Content-Length 為主 / 無則回推字串長度', meta:'可能含 unpackedSize (估算壓縮前)', keywords:['script','bundle','程式'] },
+      { key:'css', name:'CSS', category:'樣式', method:'webRequest', backup:'fetch patch', sizeStrategy:'Content-Length / 長度回推', meta:'純文字樣式', keywords:['style'] },
+      { key:'json', name:'JSON/資料', category:'資料', method:'fetch patch', backup:'webRequest', sizeStrategy:'text 長度 * 2 (UTF16?) 或 header', meta:'結構化資料', keywords:['config','data','設定'] },
+      { key:'atlas', name:'Atlas', category:'資料', method:'fetch patch', backup:'webRequest', sizeStrategy:'文字長度或 header', meta:'精靈圖描述', keywords:['atlas','map'] },
+      { key:'png', name:'PNG 圖片', category:'圖片', method:'webRequest', backup:'img element', sizeStrategy:'Content-Length', meta:'壓縮位元圖', keywords:['image','圖'] },
+      { key:'jpg', name:'JPG 圖片', category:'圖片', method:'webRequest', backup:'img element', sizeStrategy:'Content-Length', meta:'有損壓縮', keywords:['jpeg'] },
+      { key:'webp', name:'WebP 圖片', category:'圖片', method:'webRequest', backup:'img element', sizeStrategy:'Content-Length', meta:'次世代壓縮', keywords:['image'] },
+      { key:'svg', name:'SVG 向量', category:'圖片', method:'webRequest', backup:'fetch patch', sizeStrategy:'文字長度或 header', meta:'XML vector', keywords:['vector'] },
+      { key:'gif', name:'GIF 動圖', category:'圖片', method:'webRequest', backup:'img element', sizeStrategy:'Content-Length', meta:'可能含動畫', keywords:['image'] },
+      { key:'ttf', name:'TTF 字型', category:'字型', method:'webRequest', backup:'fetch patch', sizeStrategy:'Content-Length', meta:'原始字型表', keywords:['font'] },
+      { key:'otf', name:'OTF 字型', category:'字型', method:'webRequest', backup:'fetch patch', sizeStrategy:'Content-Length', meta:'OpenType', keywords:['font'] },
+      { key:'woff', name:'WOFF 字型', category:'字型', method:'webRequest', backup:'fetch patch', sizeStrategy:'Content-Length', meta:'壓縮字型', keywords:['font'] },
+      { key:'woff2', name:'WOFF2 字型', category:'字型', method:'webRequest', backup:'fetch patch', sizeStrategy:'Content-Length', meta:'更佳壓縮', keywords:['font'] },
+      { key:'mp3', name:'MP3 音訊', category:'音訊', method:'webRequest', backup:'audio element', sizeStrategy:'Content-Length', meta:'有損壓縮', keywords:['audio','bgm'] },
+      { key:'wav', name:'WAV 音訊', category:'音訊', method:'webRequest', backup:'audio element', sizeStrategy:'Content-Length', meta:'未壓或輕壓縮', keywords:['audio'] },
+      { key:'mp4', name:'MP4 影片', category:'影音', method:'webRequest', backup:'video element', sizeStrategy:'Content-Length', meta:'串流容器', keywords:['video'] },
+      { key:'wasm', name:'WebAssembly', category:'程式碼', method:'webRequest + fetch patch', backup:'--', sizeStrategy:'Content-Length', meta:'unpackedSize 估算 (x ~5-6)', keywords:['binary','module'] },
+      { key:'bin', name:'Binary 資料', category:'二進位', method:'fetch patch', backup:'webRequest', sizeStrategy:'ArrayBuffer.byteLength', meta:'raw buffer', keywords:['buffer','raw'] },
+      { key:'cconb', name:'cconb 配置', category:'二進位', method:'fetch patch', backup:'webRequest', sizeStrategy:'ArrayBuffer.byteLength', meta:'遊戲引擎配置', keywords:['engine','config'] },
+      { key:'glb', name:'GLB 模型', category:'3D 模型', method:'webRequest', backup:'fetch patch', sizeStrategy:'Content-Length', meta:'內聯二進位 + 材質', keywords:['3d','model'] },
+      { key:'gltf', name:'glTF JSON', category:'3D 模型', method:'fetch patch', backup:'webRequest', sizeStrategy:'文字長度或 header', meta:'結構 JSON + 外部資源', keywords:['3d','model'] },
+      { key:'fbx', name:'FBX 模型', category:'3D 模型', method:'webRequest', backup:'fetch patch', sizeStrategy:'Content-Length', meta:'DCC 常見格式', keywords:['3d','model'] }
+    ];
+
+    // 動態篩選按鈕
+    const filterButtonsContainer = document.getElementById('assetFilterButtons');
+    const searchInput = document.getElementById('assetSearch');
+    const cardsContainer = document.getElementById('assetCards');
+    const summaryTableBody = document.getElementById('assetSummaryTable');
+
+    const categories = [...new Set(assetTypeDefinitions.map(a=>a.category))];
+    let activeCategory = '全部';
+
+    function renderFilterButtons(){
+      filterButtonsContainer.innerHTML = '';
+      ['全部', ...categories].forEach(cat => {
+        const btn = document.createElement('button');
+        btn.textContent = cat;
+        if(cat === activeCategory) btn.classList.add('active');
+        btn.addEventListener('click', () => { activeCategory = cat; renderCards(); renderFilterButtons(); });
+        filterButtonsContainer.appendChild(btn);
+      });
+    }
+
+    function highlight(text, kw){
+      if(!kw) return text;
+      const r = new RegExp('('+kw.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')+')','ig');
+      return text.replace(r,'<mark style="background:#5c8df6; color:#fff; padding:1px 4px; border-radius:4px;">$1</mark>');
+    }
+
+    function renderCards(){
+      const kw = searchInput.value.trim().toLowerCase();
+      cardsContainer.innerHTML = '';
+      assetTypeDefinitions
+        .filter(a => activeCategory==='全部' || a.category === activeCategory)
+        .filter(a => !kw || Object.values(a).some(v => String(v).toLowerCase().includes(kw)))
+        .forEach(a => {
+          const card = document.createElement('div');
+          card.className = 'asset-card';
+          card.innerHTML = `
+            <small>${a.category}</small>
+            <h4>${highlight(a.name,kw)} <span style="opacity:.5; font-weight:400">.${a.key}</span></h4>
+            <div class="pill-row">
+              <span class="pill method">${a.method}</span>
+              <span class="pill">備援: ${a.backup}</span>
+              <span class="pill size">${a.sizeStrategy}</span>
+              <span class="pill meta">${a.meta}</span>
+            </div>
+          `;
+          cardsContainer.appendChild(card);
+        });
+    }
+
+    function renderSummaryTable(){
+      summaryTableBody.innerHTML = assetTypeDefinitions.map(a => `<tr><td>${a.key}</td><td>${a.category}</td><td>${a.method}</td><td>${a.backup}</td><td>${a.sizeStrategy}</td><td>${a.meta}</td></tr>`).join('');
+    }
+
+    renderFilterButtons();
+    renderCards();
+    renderSummaryTable();
+    searchInput.addEventListener('input', renderCards);
+
+    // Query form demo dataset (mock)
+    const mockAssets = Array.from({length:22}, (_,i) => {
+      const def = assetTypeDefinitions[i % assetTypeDefinitions.length];
+      return {
+        url: `https://game.example.com/res/${def.key}/file_${i}.${def.key}`,
+        size: Math.round((50 + (i*37) % 900) * 1024),
+        type: def.key,
+        timestamp: Date.now() - i*2311
+      };
+    });
+
+    const qType = document.getElementById('qType');
+    const qMin = document.getElementById('qMin');
+    const qMax = document.getElementById('qMax');
+    const qKeyword = document.getElementById('qKeyword');
+    const qPreview = document.getElementById('queryPreview');
+    const qResult = document.getElementById('queryResult');
+
+    // Populate type options
+    qType.innerHTML = '<option value="">全部</option>' + assetTypeDefinitions.map(a=>`<option value="${a.key}">${a.key}</option>`).join('');
+
+    function runQuery(){
+      const t = qType.value;
+      const min = parseInt(qMin.value || '0',10) * 1024;
+      const max = qMax.value ? parseInt(qMax.value,10)*1024 : Infinity;
+      const kw = qKeyword.value.trim().toLowerCase();
+      const res = mockAssets.filter(a =>
+        (!t || a.type===t) &&
+        a.size >= min && a.size <= max &&
+        (!kw || a.url.toLowerCase().includes(kw))
+      );
+      qResult.textContent = `找到 ${res.length} 筆 (示意資料)；顯示 JSON`;
+      qPreview.style.display = 'block';
+      qPreview.textContent = JSON.stringify(res.slice(0,8), null, 2) + (res.length>8?'\n... (其餘省略)':'');
+    }
+    [qType,qMin,qMax,qKeyword].forEach(el => el.addEventListener('input', runQuery));
+    runQuery();
+  </script>
+</body>
+</html>

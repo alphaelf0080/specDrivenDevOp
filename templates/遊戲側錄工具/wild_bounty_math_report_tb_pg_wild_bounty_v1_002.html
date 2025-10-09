@@ -1,0 +1,81 @@
+
+<!DOCTYPE html><html lang='zh-Hant'>
+<head><meta charset='utf-8'/><title>Wild Bounty 數學模型報告</title>
+<style>
+body { font-family: system-ui,-apple-system,Helvetica,Arial,sans-serif; margin: 28px; background:#101418; color:#e4e7eb; line-height:1.5; }
+h1,h2,h3 { color:#4FC3F7; }
+code { background:#1e272e; padding:2px 4px; border-radius:4px; }
+.table { border-collapse: collapse; width:100%; margin:16px 0; font-size:14px; }
+.table th, .table td { border:1px solid #2c3e50; padding:6px 8px; text-align:right; }
+.table th { background:#263238; text-align:center; }
+.badge { display:inline-block; padding:2px 6px; background:#37474F; border-radius:4px; font-size:12px; margin-right:4px; }
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; margin:20px 0; }
+.kpi { background:#1c252b; border:1px solid #2c3e50; padding:10px 12px; border-radius:8px; }
+.kpi h4 { margin:0 0 4px 0; font-size:13px; color:#90CAF9; font-weight:600; }
+.kpi div { font-size:18px; font-weight:600; color:#ECEFF1; }
+.small { font-size:12px; opacity:.75; }
+.section { margin:40px 0 24px; border-left:4px solid #4FC3F7; padding-left:12px; }
+.win-dist-bar { height:10px; background:#263238; position:relative; border-radius:4px; overflow:hidden; }
+.win-dist-bar span { position:absolute; top:0; left:0; height:100%; background:linear-gradient(90deg,#26c6da,#7e57c2); }
+.footer { margin-top:60px; font-size:12px; opacity:.6; }
+.highlight { color:#FFEE58; }
+</style>
+</head>
+<body>
+<h1>Wild Bounty 數學模型分析報告</h1>
+<p class='small'>資料來源表格: <code>tb_pg_wild_bounty_v1_002</code> | 產生時間: 2025-09-29 14:01:14 | 總樣本: 10814 轉</p>
+<div class='kpi-grid'>
+  <div class='kpi'><h4>整體 RTP</h4><div>93.27%</div></div>
+  <div class='kpi'><h4>Base RTP</h4><div>14.79%</div></div>
+  <div class='kpi'><h4>Base 貢獻</h4><div>14.76%</div></div>
+  <div class='kpi'><h4>Free 貢獻</h4><div>78.51%</div></div>
+  <div class='kpi'><h4>Base Hit Rate</h4><div>29.88%</div></div>
+  <div class='kpi'><h4>Free Hit Rate</h4><div>31.86%</div></div>
+  <div class='kpi'><h4>總 Hit Rate</h4><div>30.55%</div></div>
+  <div class='kpi'><h4>Free 觸發率</h4><div>21.64%</div></div>
+  <div class='kpi'><h4>最大倍數</h4><div>8.00x</div></div>
+  <div class='kpi'><h4>平均倍數</h4><div>0.15x</div></div>
+  <div class='kpi'><h4>波動指標</h4><div>2.83</div></div>
+</div>
+
+<h2 class='section'>1. 符號賠付表</h2>
+
+    <table class='table'>
+      <thead><tr><th>ID</th><th>符號</th><th>3連</th><th>4連</th><th>5連</th><th>6連</th></tr></thead>
+      <tbody>
+    <tr><td>1</td><td style='text-align:left'>Wild</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>2</td><td style='text-align:left'>牛仔</td><td>10</td><td>20</td><td>30</td><td>50</td></tr>
+<tr><td>3</td><td style='text-align:left'>手槍</td><td>8</td><td>15</td><td>20</td><td>30</td></tr>
+<tr><td>4</td><td style='text-align:left'>牛仔帽</td><td>5</td><td>10</td><td>15</td><td>20</td></tr>
+<tr><td>5</td><td style='text-align:left'>酒瓶</td><td>5</td><td>10</td><td>15</td><td>20</td></tr>
+<tr><td>6</td><td style='text-align:left'>A</td><td>2</td><td>4</td><td>6</td><td>10</td></tr>
+<tr><td>7</td><td style='text-align:left'>K</td><td>2</td><td>4</td><td>6</td><td>10</td></tr>
+<tr><td>8</td><td style='text-align:left'>Q</td><td>1</td><td>2</td><td>3</td><td>5</td></tr>
+<tr><td>9</td><td style='text-align:left'>J</td><td>1</td><td>2</td><td>3</td><td>5</td></tr>
+</tbody></table>
+
+<h2 class='section'>2. 關鍵指標說明</h2>
+<ul>
+  <li><strong>Hit Rate</strong>: 有任意中獎(金額>0)的轉數比例。</li>
+  <li><strong>Free 觸發率</strong>: 從 Base 進入 Free 的觸發事件頻率。</li>
+  <li><strong>Base/Free 貢獻</strong>: 對整體RTP的直接貢獻百分比。</li>
+  <li><strong>波動指標</strong>: 倍數標準差 / 平均倍數，粗略衡量波動度。</li>
+</ul>
+
+<h2 class='section'>3. 中獎倍數分布</h2>
+<p>小獎(<2x): 7057 (98.8%) &nbsp; | 中獎(2-10x): 83 (1.2%) &nbsp; | 大獎(≥10x): 0 (0.0%)</p>
+<div class='win-dist-bar'><span style='width:98.84%;background:#42a5f5'></span><span style='left:98.84%;width:1.16%;background:#ab47bc'></span><span style='left:100.00%;width:0.00%;background:#ff7043'></span></div>
+<p class='small'>最大倍數: 8.00x | 中位數: 0.00x | 標準差: 0.42</p>
+
+<h2 class='section'>4. RTP 組成分析</h2>
+<p>整體 RTP 93.27% 由 Base 部分 14.76% 和 Free 部分 78.51% 組成。Base RTP 為 14.79%。由於免費遊戲沒有實際下注 (tb=0)，其貢獻反映的是獲得的回報。</p>
+
+<h2 class='section'>5. Free Game 觸發統計</h2>
+<p>估計觸發次數: 2340 | 觸發率: 21.64% (約每 4.6 轉觸發一次)。</p>
+
+<h2 class='section'>6. 數學模型結論</h2>
+<p>本遊戲屬於 <strong>特徵驅動</strong> 的影片老虎機設計，Base 遊戲提供頻繁的小額中獎與免費遊戲觸發機會，主要回報集中在 Free 遊戲。<br>
+波動指標 2.83 顯示 中等 波動性；建議在調整付費表或免費遊戲出現頻率時保持 Base 與 Free 貢獻的平衡。</p>
+
+<div class='footer'>報告生成: 2025-09-29 14:01:14 ・ 工具版本 1.0 ・ 此報告僅基於現有資料估計，樣本大小與資料品質會影響準確性。</div>
+</body></html>

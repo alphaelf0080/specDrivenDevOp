@@ -1,7 +1,7 @@
 /* 1:8:1 三欄布局容器 - Dark 模式 */
 .tree-diagram-container {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   display: grid;
   grid-template-columns: 80px 1fr 320px;
   grid-template-rows: auto 1fr;

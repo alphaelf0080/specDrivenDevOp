@@ -172,6 +172,75 @@ export async function initializeDatabase(db: Database, tablesToCheck: string[] =
   }
 }
 
+async function ensureColumnExists(
+  db: Database,
+  columnSet: Set<string>,
+  columnName: string,
+  addColumnSql: string,
+  afterAdd?: () => Promise<void>,
+): Promise<void> {
+  if (columnSet.has(columnName)) {
+    return;
+  }
+
+  await db.query(addColumnSql);
+  columnSet.add(columnName);
+
+  if (afterAdd) {
+    await afterAdd();
+  }
+}
+
+async function ensureProjectsSchema(db: Database): Promise<void> {
+  const columnRows = await db.queryMany<{ column_name: string }>(
+    `SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = $1`,
+    ['projects'],
+  );
+
+  const columnSet = new Set(columnRows.map((row) => row.column_name));
+
+  if (!columnSet.has('name_zh') && columnSet.has('name_ch')) {
+    console.log('🛠️  將 projects.name_ch 欄位重新命名為 name_zh');
+    await db.query('ALTER TABLE projects RENAME COLUMN name_ch TO name_zh');
+    columnSet.delete('name_ch');
+    columnSet.add('name_zh');
+  }
+
+  await ensureColumnExists(
+    db,
+    columnSet,
+    'name',
+    'ALTER TABLE projects ADD COLUMN name VARCHAR(255)',
+    async () => {
+      console.log('🛠️  新增 projects.name 欄位，回填既有資料');
+      await db.query(
+        `UPDATE projects 
+         SET name = COALESCE(NULLIF(name_zh, ''), NULLIF(name_en, ''), '未命名專案')
+         WHERE name IS NULL OR name = ''`
+      );
+    },
+  );
+
+  console.log('🧹 確保 projects.name 欄位具備資料');
+  await db.query(
+    `UPDATE projects 
+     SET name = COALESCE(NULLIF(name, ''), NULLIF(name_zh, ''), NULLIF(name_en, ''), '未命名專案')
+     WHERE name IS NULL OR name = ''`
+  );
+
+  try {
+    await db.query('ALTER TABLE projects ALTER COLUMN name SET NOT NULL');
+  } catch (error) {
+    console.warn('⚠️  無法將 projects.name 設為 NOT NULL，請手動檢查現有資料。', error);
+  }
+}
+
+async function ensureProjectsIndexes(db: Database): Promise<void> {
+  await db.query('CREATE INDEX IF NOT EXISTS idx_projects_name ON projects (name)');
+  await db.query('CREATE INDEX IF NOT EXISTS idx_projects_status ON projects (status)');
+  await db.query('CREATE INDEX IF NOT EXISTS idx_projects_owner_id ON projects (owner_id)');
+}
+
 /**
  * 查詢資料表資料
  */
@@ -233,6 +302,10 @@ export async function initializeProjectsTable(db: Database): Promise<any[]> {
   try {
     // 初始化資料庫（檢查並建立 projects 表）
     await initializeDatabase(db, ['projects']);
+
+    // 確保 projects 資料表欄位與索引符合最新需求
+    await ensureProjectsSchema(db);
+    await ensureProjectsIndexes(db);
 
     // 載入 projects 資料
     const projects = await loadTableData(db, 'projects', {

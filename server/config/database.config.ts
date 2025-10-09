@@ -28,7 +28,7 @@ export interface DatabaseConfig extends PoolConfig {
  */
 export function loadDatabaseConfig(): DatabaseConfig {
   const config: DatabaseConfig = {
-    host: process.env.DB_HOST || 'localhost',
+    host: process.env.DB_HOST || '192.168.10.6',
     port: parseInt(process.env.DB_PORT || '5432', 10),
     database: process.env.DB_NAME || 'postgres',
     user: process.env.DB_USER || 'postgres',

@@ -170,7 +170,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap }) => {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ verticalAlign: 'middle', marginRight: '8px' }}>
                 <path d="M20 6H12L10 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V8C22 6.9 21.1 6 20 6Z" fill="currentColor"/>
               </svg>
-              專案
+              最近編輯的專案
             </h2>
             <button 
               className="manage-btn"
@@ -184,40 +184,93 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap }) => {
             </button>
           </div>
 
-          <div className="project-container">
+          {/* 專案統計 */}
+          {!dbLoading && !dbError && (
+            <div className="project-stats">
+              <div className="stat-item">
+                <span className="stat-label">總專案數</span>
+                <span className="stat-value">{projects.length}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">資料庫狀態</span>
+                <span className="stat-value">
+                  {initialized ? (
+                    <span className="badge success">✓ 已連線</span>
+                  ) : (
+                    <span className="badge warning">初始化中...</span>
+                  )}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className="project-list">
             {dbLoading ? (
-              <div className="db-status loading">
+              <div className="loading-state">
                 <div className="status-icon">⏳</div>
-                <div className="status-text">正在載入專案資料...</div>
+                <div>正在載入專案資料...</div>
               </div>
             ) : dbError ? (
-              <div className="db-status error">
+              <div className="error-state">
                 <div className="status-icon">❌</div>
-                <div className="status-text">
-                  <div>資料庫連線錯誤</div>
-                  <div className="error-detail">{dbError}</div>
-                </div>
+                <div>資料庫連線錯誤</div>
+                <div className="error-detail">{dbError}</div>
               </div>
+            ) : projects.length > 0 ? (
+              projects.slice(0, 5).map((project) => (
+                <div
+                  key={project.id}
+                  className="project-card"
+                  onClick={() => {
+                    console.log('🚀 開啟專案:', project.name, 'ID:', project.id);
+                    // 在新視窗開啟專案主視窗
+                    const projectWindow = window.open(
+                      `/?view=project-page&id=${project.id}`,
+                      `project-${project.id}`,
+                      'width=1400,height=900,left=100,top=50'
+                    );
+                    if (projectWindow) {
+                      projectWindow.focus();
+                    }
+                  }}
+                >
+                  <div className="project-card-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M20 6H12L10 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V8C22 6.9 21.1 6 20 6Z" fill="currentColor"/>
+                    </svg>
+                  </div>
+                  <div className="project-card-content">
+                    <div className="project-card-title">{project.name}</div>
+                  </div>
+                  <div className="project-card-meta">
+                    <span className="project-type">{project.game_type}</span>
+                    <span className={`project-status status-${project.status}`}>
+                      {project.status === 'active' ? '進行中' : 
+                       project.status === 'archived' ? '已封存' : 
+                       project.status === 'planning' ? '規劃中' :
+                       project.status === 'draft' ? '草稿' : project.status}
+                    </span>
+                    <span className="project-time">
+                      {formatLastOpened(project.updated_at || project.created_at)}
+                    </span>
+                  </div>
+                  <div className="project-card-action">
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              ))
             ) : (
-              <div className="db-status success">
-                <div className="status-icon">
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM9 17H7V10H9V17ZM13 17H11V7H13V17ZM17 17H15V13H17V17Z" fill="currentColor"/>
-                  </svg>
-                </div>
-                <div className="status-content">
-                  <div className="project-count">
-                    <span className="count-number">{projects.length}</span>
-                    <span className="count-label">個專案</span>
-                  </div>
-                  <div className="status-detail">
-                    {initialized ? (
-                      <span className="badge success">✓ 資料庫已連線</span>
-                    ) : (
-                      <span className="badge warning">初始化中...</span>
-                    )}
-                  </div>
-                </div>
+              <div className="empty-state">
+                <div className="empty-icon">📋</div>
+                <p>尚無專案</p>
+                <button 
+                  className="create-first-btn"
+                  onClick={() => onNavigate('project-manager')}
+                >
+                  建立第一個專案
+                </button>
               </div>
             )}
           </div>

@@ -10,6 +10,9 @@ export interface Project {
   id: number;
   uuid: string;
   name: string;
+  name_zh: string;
+  name_en: string;
+  game_type: string;
   description?: string;
   status: string;
   owner_id?: number;
@@ -67,25 +70,24 @@ export function useDbInit(autoInit: boolean = true): UseDbInitResult {
 
       console.log('🗄️ 開始資料庫初始化...');
 
-      // 呼叫資料庫初始化 API
-      const response = await fetch('/api/db/init');
-      const data: DbInitResponse = await response.json();
+      // 呼叫資料庫初始化 API（確保資料表存在）
+      const initResponse = await fetch('/api/db/init');
+      const initData: DbInitResponse = await initResponse.json();
 
-      if (!data.success) {
-        throw new Error(data.error || '資料庫初始化失敗');
+      if (!initData.success) {
+        throw new Error(initData.error || '資料庫初始化失敗');
       }
 
       console.log('✅ 資料庫初始化成功');
-      console.log(`📊 載入 ${data.data?.count || 0} 個專案`);
-
-      setProjects(data.data?.projects || []);
       setInitialized(true);
+
+      // 初始化成功後,載入最新編輯的專案
+      await loadProjects();
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '未知錯誤';
       console.error('❌ 資料庫初始化失敗:', errorMessage);
       setError(errorMessage);
-    } finally {
       setLoading(false);
     }
   };
@@ -97,7 +99,8 @@ export function useDbInit(autoInit: boolean = true): UseDbInitResult {
 
       console.log('📋 載入 projects 資料...');
 
-      const response = await fetch('/api/projects');
+      // 首頁只載入最新編輯的 5 個專案
+      const response = await fetch('/api/projects?limit=5&orderBy=updated_at DESC');
       const data: ProjectsResponse = await response.json();
 
       if (!data.success) {

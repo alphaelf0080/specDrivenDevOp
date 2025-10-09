@@ -60,10 +60,11 @@ export default function ProjectManager({ onClose }: ProjectManagerProps) {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/api/db/init');
+      // 使用 /api/projects 獲取所有專案（無限制）
+      const response = await fetch('/api/projects');
       if (!response.ok) throw new Error('載入專案失敗');
       const data = await response.json();
-      setProjects(data.data?.projects || []);
+      setProjects(data.data || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : '未知錯誤');
     } finally {

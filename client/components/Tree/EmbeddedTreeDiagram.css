@@ -1,0 +1,355 @@
+/* 嵌入式樹狀圖容器 - 無工具列和左側導航 */
+.embedded-tree-container {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  background: #0f172a;
+  color: #e2e8f0;
+  transition: grid-template-columns 0.3s ease;
+}
+
+/* 當右側面板收起時 */
+.embedded-tree-container:has(.embedded-sidebar-right.collapsed) {
+  grid-template-columns: 1fr 40px;
+}
+
+/* 樹狀圖主編輯區 */
+.embedded-tree-flow {
+  position: relative;
+  background: #1e293b;
+  overflow: hidden;
+}
+
+/* 右側屬性面板 */
+.embedded-sidebar-right {
+  background: rgba(129, 140, 248, 0.05);
+  border-left: 1px solid #334155;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.embedded-sidebar-right.collapsed {
+  width: 40px;
+}
+
+.embedded-sidebar-right.collapsed .embedded-panel-content {
+  display: none;
+}
+
+/* 面板切換按鈕 */
+.embedded-panel-toggle {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 48px;
+  background: #334155;
+  border: 1px solid #475569;
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 12px;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.embedded-panel-toggle:hover {
+  background: #475569;
+  color: #e2e8f0;
+}
+
+/* 面板內容 */
+.embedded-panel-content {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.panel-title {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  color: #c7d2fe;
+  border-bottom: 2px solid #334155;
+  padding-bottom: 8px;
+}
+
+/* 節點詳細資訊 */
+.node-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-section label {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-section .value {
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid #334155;
+  border-radius: 4px;
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+.detail-section .value.small {
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+}
+
+/* 標籤顯示和編輯 */
+.label-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid #334155;
+  border-radius: 4px;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.label-display:hover {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: #818cf8;
+}
+
+.edit-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.edit-btn:hover {
+  color: #818cf8;
+}
+
+.edit-input-group {
+  display: flex;
+  gap: 4px;
+}
+
+.edit-input-group input {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid #818cf8;
+  border-radius: 4px;
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+.edit-input-group input:focus {
+  outline: none;
+  border-color: #a5b4fc;
+}
+
+.edit-input-group button {
+  padding: 8px 12px;
+  background: #334155;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.edit-input-group button:hover {
+  background: #475569;
+}
+
+/* 操作按鈕 */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.action-buttons button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-add {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+}
+
+.btn-add:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(34, 197, 94, 0.3);
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.btn-delete:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* 無選擇狀態 */
+.no-selection {
+  text-align: center;
+  color: #64748b;
+  padding: 40px 20px;
+}
+
+.no-selection p {
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+.shortcuts {
+  text-align: left;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.shortcuts h4 {
+  margin: 0 0 12px 0;
+  color: #94a3b8;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.shortcuts ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.shortcuts li {
+  padding: 6px 0;
+  font-size: 13px;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shortcuts kbd {
+  background: #334155;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  color: #818cf8;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* 右鍵選單 */
+.embedded-context-menu {
+  position: fixed;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  min-width: 160px;
+}
+
+.embedded-context-menu button {
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: #e2e8f0;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.embedded-context-menu button:hover:not(:disabled) {
+  background: #334155;
+}
+
+.embedded-context-menu button:disabled,
+.embedded-context-menu button.disabled {
+  color: #475569;
+  cursor: not-allowed;
+}
+
+/* ReactFlow 樣式調整 */
+.embedded-tree-flow .react-flow__background {
+  background: #1e293b;
+}
+
+.embedded-tree-flow .react-flow__controls {
+  background: #334155;
+  border: 1px solid #475569;
+  border-radius: 8px;
+}
+
+.embedded-tree-flow .react-flow__controls-button {
+  background: transparent;
+  border-bottom: 1px solid #475569;
+  color: #94a3b8;
+}
+
+.embedded-tree-flow .react-flow__controls-button:hover {
+  background: #475569;
+  color: #e2e8f0;
+}
+
+.embedded-tree-flow .react-flow__controls-button:last-child {
+  border-bottom: none;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .embedded-tree-container {
+    grid-template-columns: 1fr;
+  }
+
+  .embedded-sidebar-right {
+    display: none;
+  }
+}

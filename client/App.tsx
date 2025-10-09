@@ -4,13 +4,14 @@ import SDDMindMap from './components/MindMap/SDDMindMap';
 import MindMapManagerPage from './components/MindMap/MindMapManagerPage';
 import HomePage from './components/Navigation/HomePage';
 import ProjectManager from './components/ProjectManager/ProjectManager';
+import ProjectPage from './pages/ProjectPage';
 import { TreeDemoPage } from './components/Tree';
 import TreeUiLayoutPage from './components/Tree/TreeUiLayoutPage';
 import TreePsdStructurePage from './components/Tree/TreePsdStructurePage';
 import TreeUiLayoutRichPage from './components/Tree/TreeUiLayoutRichPage';
 import './App.css';
 
-type PageView = 'home' | 'project-manager' | 'mindmap-manager' | 'sdd-mindmap' | 'demo-mindmap' | 'slot-engine' | 'tree-demo' | 'tree-ui-layout' | 'tree-ui-layout-rich' | 'tree-psd-structure';
+type PageView = 'home' | 'project-page' | 'project-manager' | 'mindmap-manager' | 'sdd-mindmap' | 'demo-mindmap' | 'slot-engine' | 'tree-demo' | 'tree-ui-layout' | 'tree-ui-layout-rich' | 'tree-psd-structure';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageView>('home');
@@ -19,7 +20,7 @@ function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const view = params.get('view') as PageView;
-    if (view && ['project-manager', 'mindmap-manager', 'sdd-mindmap', 'demo-mindmap', 'slot-engine', 'tree-demo', 'tree-ui-layout', 'tree-ui-layout-rich', 'tree-psd-structure'].includes(view)) {
+    if (view && ['project-page', 'project-manager', 'mindmap-manager', 'sdd-mindmap', 'demo-mindmap', 'slot-engine', 'tree-demo', 'tree-ui-layout', 'tree-ui-layout-rich', 'tree-psd-structure'].includes(view)) {
       setCurrentPage(view);
     }
   }, []);
@@ -60,6 +61,9 @@ function App() {
 
   // 根據當前頁面渲染對應內容
   switch (currentPage) {
+    case 'project-page':
+      return <ProjectPage />;
+
     case 'sdd-mindmap':
       return (
         <div style={{ position: 'relative' }}>

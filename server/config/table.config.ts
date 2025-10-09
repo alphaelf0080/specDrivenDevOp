@@ -516,7 +516,14 @@ export const tableConfigs: TableConfig = {
         comment: 'UUID',
       },
       {
-        name: 'name_ch',
+        name: 'name',
+        type: ColumnType.VARCHAR,
+        length: 255,
+        notNull: true,
+        comment: '專案名稱（顯示用）',
+      },
+      {
+        name: 'name_zh',
         type: ColumnType.VARCHAR,
         length: 255,
         notNull: true,
@@ -560,6 +567,27 @@ export const tableConfigs: TableConfig = {
         comment: '擁有者 ID',
       },
       {
+        name: 'tree_data',
+        type: ColumnType.JSONB,
+        comment: '樹狀圖資料（JSONB 格式）- 儲存專案的樹狀結構',
+      },
+      {
+        name: 'tree_config',
+        type: ColumnType.JSONB,
+        comment: '樹狀圖配置（JSONB 格式）- 儲存樹狀圖的顯示設定',
+      },
+      {
+        name: 'tree_version',
+        type: ColumnType.INTEGER,
+        default: 1,
+        comment: '樹狀圖版本號',
+      },
+      {
+        name: 'tree_updated_at',
+        type: ColumnType.TIMESTAMP_WITH_TIMEZONE,
+        comment: '樹狀圖最後更新時間',
+      },
+      {
         name: 'created_at',
         type: ColumnType.TIMESTAMP_WITH_TIMEZONE,
         default: 'CURRENT_TIMESTAMP',
@@ -582,6 +610,8 @@ export const tableConfigs: TableConfig = {
       { name: 'idx_projects_owner_id', columns: ['owner_id'] },
       { name: 'idx_projects_status', columns: ['status'] },
       { name: 'idx_projects_name', columns: ['name'] },
+      { name: 'idx_projects_tree_data', columns: ['tree_data'], type: 'GIN' },
+      { name: 'idx_projects_tree_config', columns: ['tree_config'], type: 'GIN' },
     ],
     triggers: ['update_projects_updated_at'],
   },
