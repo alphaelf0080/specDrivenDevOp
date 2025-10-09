@@ -12,6 +12,10 @@ export interface MindMapNode {
     x: number;
     y: number;
   };
+  // AI Agent 相關欄位
+  enableAiAgent?: boolean;
+  aiAgentType?: string;
+  aiAgentPrompt?: string;
 }
 
 export interface MindMapEdge {

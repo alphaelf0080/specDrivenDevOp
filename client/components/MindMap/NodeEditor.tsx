@@ -4,7 +4,15 @@ import './NodeEditor.css';
 
 export interface NodeEditorProps {
   node: Node;
-  onSave: (nodeId: string, updates: { label?: string; description?: string; style?: any; type?: 'branch' | 'leaf' | 'root' }) => void;
+  onSave: (nodeId: string, updates: { 
+    label?: string; 
+    description?: string; 
+    style?: any; 
+    type?: 'branch' | 'leaf' | 'root';
+    enableAiAgent?: boolean;
+    aiAgentType?: string;
+    aiAgentPrompt?: string;
+  }) => void;
   onClose: () => void;
 }
 
@@ -20,6 +28,17 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose }) => {
   const [label, setLabel] = useState(node.data.label || '');
   const [description, setDescription] = useState(
     node.data.description || node.data.data?.description || ''
+  );
+  
+  // AI Agent 相關狀態
+  const [enableAiAgent, setEnableAiAgent] = useState(
+    node.data.enableAiAgent || false
+  );
+  const [aiAgentType, setAiAgentType] = useState(
+    node.data.aiAgentType || 'claude'
+  );
+  const [aiAgentPrompt, setAiAgentPrompt] = useState(
+    node.data.aiAgentPrompt || ''
   );
   
   // 樣式設定
@@ -54,6 +73,9 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose }) => {
     onSave(node.id, {
       label,
       description,
+      enableAiAgent,
+      aiAgentType,
+      aiAgentPrompt,
       style: {
         backgroundColor,
         borderColor,
@@ -142,6 +164,51 @@ const NodeEditor: React.FC<NodeEditorProps> = ({ node, onSave, onClose }) => {
               placeholder="請輸入節點描述（選填）"
               rows={3}
             />
+          </div>
+
+          {/* AI Agent 設定 */}
+          <div className="node-editor-section">
+            <div className="node-editor-ai-header">
+              <label className="node-editor-label">AI Agent</label>
+              <label className="node-editor-switch">
+                <input
+                  type="checkbox"
+                  checked={enableAiAgent}
+                  onChange={(e) => setEnableAiAgent(e.target.checked)}
+                />
+                <span className="node-editor-switch-slider"></span>
+              </label>
+            </div>
+            
+            {enableAiAgent && (
+              <div className="node-editor-ai-content">
+                <div className="node-editor-field" style={{ marginTop: '12px' }}>
+                  <label className="node-editor-sublabel">AI Agent 類型</label>
+                  <select
+                    value={aiAgentType}
+                    onChange={(e) => setAiAgentType(e.target.value)}
+                    className="node-editor-select"
+                  >
+                    <option value="claude">Claude (Anthropic)</option>
+                    <option value="gpt-4">GPT-4 (OpenAI)</option>
+                    <option value="gemini">Gemini (Google)</option>
+                    <option value="copilot">GitHub Copilot</option>
+                    <option value="custom">自訂 Agent</option>
+                  </select>
+                </div>
+                
+                <div className="node-editor-field" style={{ marginTop: '12px' }}>
+                  <label className="node-editor-sublabel">AI Prompt</label>
+                  <textarea
+                    value={aiAgentPrompt}
+                    onChange={(e) => setAiAgentPrompt(e.target.value)}
+                    className="node-editor-textarea"
+                    placeholder="請輸入 AI Agent 的 Prompt 指令..."
+                    rows={4}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 快速配色 */}

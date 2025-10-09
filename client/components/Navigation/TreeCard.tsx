@@ -54,7 +54,7 @@ const TreeCard: React.FC<TreeCardProps> = ({
       onMouseLeave={() => setShowActions(false)}
     >
       <div className="tree-card-icon">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M22 11V3H15V6H9V3H2V11H9V8H11V18H15V21H22V13H15V16H13V8H15V11H22Z" fill="currentColor"/>
         </svg>
       </div>
@@ -72,7 +72,7 @@ const TreeCard: React.FC<TreeCardProps> = ({
                 }}
                 title="編輯"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z" fill="currentColor"/>
                 </svg>
               </button>
@@ -86,7 +86,7 @@ const TreeCard: React.FC<TreeCardProps> = ({
                 }}
                 title="刪除"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM19 4H15.5L14.5 3H9.5L8.5 4H5V6H19V4Z" fill="currentColor"/>
                 </svg>
               </button>
@@ -94,26 +94,22 @@ const TreeCard: React.FC<TreeCardProps> = ({
           )}
         </div>
         
-        {description && (
-          <p className="tree-card-description">{description}</p>
-        )}
-        
         <div className="tree-card-meta">
           <span className="meta-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="3" fill="currentColor"/>
             </svg>
-            {nodeCount} 個節點
+            {nodeCount}
           </span>
           <span className="meta-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 2L2 7V12L12 17L22 12V7L12 2Z" fill="currentColor"/>
             </svg>
-            深度 {maxDepth}
+            深度{maxDepth}
           </span>
           {projectName && (
-            <span className="meta-item project-badge">
-              📁 {projectName}
+            <span className="project-badge">
+              📁{projectName}
             </span>
           )}
         </div>
@@ -125,7 +121,7 @@ const TreeCard: React.FC<TreeCardProps> = ({
             onClick={() => onOpen(id, uuid)}
           >
             開啟
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
@@ -133,7 +129,7 @@ const TreeCard: React.FC<TreeCardProps> = ({
       </div>
       
       <div className="tree-card-uuid" title={`UUID: ${uuid}`}>
-        🔑 {uuid.slice(0, 8)}...
+        {uuid.slice(0, 8)}
       </div>
     </div>
   );

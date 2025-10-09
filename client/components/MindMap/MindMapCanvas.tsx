@@ -542,7 +542,15 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
 
   // 處理節點完整編輯（文字+樣式）
   const handleSaveNodeEdit = useCallback(
-    (nodeId: string, updates: { label?: string; description?: string; style?: any; type?: 'branch' | 'leaf' | 'root' }) => {
+    (nodeId: string, updates: { 
+      label?: string; 
+      description?: string; 
+      style?: any; 
+      type?: 'branch' | 'leaf' | 'root';
+      enableAiAgent?: boolean;
+      aiAgentType?: string;
+      aiAgentPrompt?: string;
+    }) => {
       console.log('🔧 Saving node edit:', { nodeId, updates });
       
       setNodes((nds) => {
@@ -568,6 +576,20 @@ const MindMapCanvas: React.FC<MindMapCanvasProps> = ({
               description: updates.description,
             };
             console.log('📝 Updated description:', updates.description);
+          }
+
+          // 更新 AI Agent 設定
+          if (updates.enableAiAgent !== undefined) {
+            updatedNode.data.enableAiAgent = updates.enableAiAgent;
+            console.log('🤖 Updated enableAiAgent:', updates.enableAiAgent);
+          }
+          if (updates.aiAgentType !== undefined) {
+            updatedNode.data.aiAgentType = updates.aiAgentType;
+            console.log('🤖 Updated aiAgentType:', updates.aiAgentType);
+          }
+          if (updates.aiAgentPrompt !== undefined) {
+            updatedNode.data.aiAgentPrompt = updates.aiAgentPrompt;
+            console.log('🤖 Updated aiAgentPrompt:', updates.aiAgentPrompt);
           }
 
           // 更新類型

@@ -37,6 +37,9 @@ export type TreeNodeMetadata = {
   opacity?: string;              // 7. 透明度 (% 字串)
   mask?: Record<string, unknown>;// 8. 遮罩
   notes?: string;                // 備註
+  enableAiAgent?: boolean;       // AI Agent 開關
+  aiAgentService?: string;       // AI Agent 服務
+  aiAgentPrompt?: string;        // AI Agent Prompt
   [key: string]: unknown;
 };
 
@@ -75,6 +78,28 @@ const depthPalette = [
   { bg: '#334155', border: '#94a3b8', text: '#cbd5e1' }, // slate - 灰藍
 ];
 
+const AI_AGENT_SERVICE_OPTIONS = [
+  { value: 'claude', label: 'Claude (Anthropic)' },
+  { value: 'gpt-4', label: 'GPT-4 (OpenAI)' },
+  { value: 'gemini', label: 'Gemini (Google)' },
+  { value: 'copilot', label: 'GitHub Copilot' },
+  { value: 'custom', label: '自訂 Agent' },
+] as const;
+
+const DEFAULT_AI_AGENT_SERVICE = AI_AGENT_SERVICE_OPTIONS[0].value;
+
+const normalizeAiAgentService = (service?: string): string => {
+  if (!service) return DEFAULT_AI_AGENT_SERVICE;
+  const exists = AI_AGENT_SERVICE_OPTIONS.some((option) => option.value === service);
+  return exists ? service : DEFAULT_AI_AGENT_SERVICE;
+};
+
+const resolveAiAgentServiceLabel = (service?: string): string => {
+  if (!service) return '（未設定）';
+  const found = AI_AGENT_SERVICE_OPTIONS.find((option) => option.value === service);
+  return found ? found.label : service;
+};
+
 function styleForDepth(depth: number) {
   const c = depthPalette[depth % depthPalette.length];
   return {
@@ -91,6 +116,26 @@ function edgeStyleForDepth(depth: number) {
   const strokeWidth = Math.max(1.5, 1.5 + depth * 0.6);
   return { stroke: c.border, strokeWidth, opacity: 0.9 } as React.CSSProperties;
 }
+
+type EditNodeFormState = {
+  nodeId: string;
+  label: string;
+  function: string;
+  description: string;
+  photoshopX: string;
+  photoshopY: string;
+  photoshopZ: string;
+  engineX: string;
+  engineY: string;
+  engineZ: string;
+  blendMode: string;
+  opacity: string;
+  mask: string;
+  notes: string;
+  enableAiAgent: boolean;
+  aiAgentService: string;
+  aiAgentPrompt: string;
+};
 
 function layoutTree(root: TreeNode, dir: 'LR' | 'TB', nodeSize = nodeDefaults) {
   const g = new dagre.graphlib.Graph();
@@ -307,7 +352,7 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
   const [isEditing, setIsEditing] = useState(false);
   const [panelWidth, setPanelWidth] = useState(320); // 屬性面板寬度狀態
   const [isResizing, setIsResizing] = useState(false); // 拖曳調整狀態
-  const [editData, setEditData] = useState({
+  const [editData, setEditData] = useState<EditNodeFormState>({
     nodeId: '',
     label: '',
     function: '',
@@ -321,7 +366,10 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
     blendMode: '',
     opacity: '',
     mask: '{}',
-    notes: ''
+    notes: '',
+    enableAiAgent: false,
+    aiAgentService: DEFAULT_AI_AGENT_SERVICE,
+    aiAgentPrompt: '',
   });
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
   const hasInitialized = useRef(false);
@@ -574,8 +622,11 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
       const metadata: TreeNodeMetadata | undefined = selectedNode.data.metadata;
       const photoshop = metadata?.photoshopCoords;
       const engine = metadata?.engineCoords;
-  const maskValue = metadata?.mask;
-  const maskString = maskValue ? JSON.stringify(maskValue) : '{}';
+      const maskValue = metadata?.mask;
+      const maskString = maskValue ? JSON.stringify(maskValue) : '{}';
+      const enableAiAgent = metadata?.enableAiAgent ?? false;
+      const aiAgentService = normalizeAiAgentService(metadata?.aiAgentService);
+      const aiAgentPrompt = metadata?.aiAgentPrompt || '';
 
       setEditData({
         nodeId: metadata?.nodeId !== undefined ? metadata.nodeId.toString() : '',
@@ -591,7 +642,10 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
         blendMode: metadata?.blendMode || '',
         opacity: metadata?.opacity || '',
         mask: maskString,
-        notes: metadata?.notes || ''
+        notes: metadata?.notes || '',
+        enableAiAgent,
+        aiAgentService,
+        aiAgentPrompt,
       });
       setIsEditing(true);
     }
@@ -694,6 +748,16 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
       assignString('opacity', editData.opacity);
       assignString('notes', editData.notes);
 
+      if (editData.enableAiAgent) {
+        nextMetadata.enableAiAgent = true;
+        nextMetadata.aiAgentService = normalizeAiAgentService(editData.aiAgentService);
+        assignString('aiAgentPrompt', editData.aiAgentPrompt);
+      } else {
+        delete nextMetadata.enableAiAgent;
+        delete nextMetadata.aiAgentService;
+        delete nextMetadata.aiAgentPrompt;
+      }
+
       const maskInput = editData.mask.trim();
       if (!maskInput) {
         nextMetadata.mask = {};
@@ -759,7 +823,10 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
       blendMode: '',
       opacity: '',
       mask: '{}',
-      notes: ''
+      notes: '',
+      enableAiAgent: false,
+      aiAgentService: DEFAULT_AI_AGENT_SERVICE,
+      aiAgentPrompt: '',
     });
   }, []);
 
@@ -912,6 +979,9 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
   }, [contextMenu.node, onDeleteNode, closeContextMenu]);
 
   const isDeleteDisabled = !contextMenu.node || contextMenu.node.id === data.id || !onDeleteNode;
+
+  const selectedMetadata = selectedNode?.data?.metadata as TreeNodeMetadata | undefined;
+  const selectedAiAgentServiceLabel = resolveAiAgentServiceLabel(selectedMetadata?.aiAgentService);
 
   return (
     <div className={`tree-diagram-container ${embedded ? 'embedded-mode' : 'standalone-mode'}`} style={containerStyle}>
@@ -1075,6 +1145,76 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
                 ) : (
                   <div className="property-value">
                     {selectedNode.data.metadata?.description || '（無）'}
+                  </div>
+                )}
+              </div>
+
+              {/* AI Agent 設定 */}
+              <div className="property-section align-start property-section-ai">
+                <div className="property-label">AI Agent</div>
+                {isEditing ? (
+                  <div className="property-ai-column">
+                    <label className="property-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={editData.enableAiAgent}
+                        onChange={(e) =>
+                          setEditData((prev) => ({
+                            ...prev,
+                            enableAiAgent: e.target.checked,
+                            aiAgentService: e.target.checked
+                              ? prev.aiAgentService || DEFAULT_AI_AGENT_SERVICE
+                              : prev.aiAgentService,
+                          }))
+                        }
+                      />
+                      啟用此節點的 AI Agent
+                    </label>
+                    <select
+                      className="property-input"
+                      value={editData.aiAgentService}
+                      onChange={(e) =>
+                        setEditData((prev) => ({
+                          ...prev,
+                          aiAgentService: e.target.value,
+                        }))
+                      }
+                      disabled={!editData.enableAiAgent}
+                    >
+                      {AI_AGENT_SERVICE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <textarea
+                      className="property-textarea"
+                      value={editData.aiAgentPrompt}
+                      onChange={(e) =>
+                        setEditData((prev) => ({
+                          ...prev,
+                          aiAgentPrompt: e.target.value,
+                        }))
+                      }
+                      placeholder="輸入 AI Agent Prompt（可選）"
+                      rows={4}
+                      disabled={!editData.enableAiAgent}
+                    />
+                    <p className="property-hint">提示：設定後會同步儲存到樹狀圖資料的 metadata。</p>
+                  </div>
+                ) : (
+                  <div className="property-ai-display">
+                    <span className={`property-badge ${selectedMetadata?.enableAiAgent ? 'active' : 'inactive'}`}>
+                      {selectedMetadata?.enableAiAgent ? '已啟用' : '未啟用'}
+                    </span>
+                    {selectedMetadata?.enableAiAgent && (
+                      <>
+                        <div className="property-ai-line">服務：{selectedAiAgentServiceLabel}</div>
+                        <div className="property-ai-line property-value-multiline">
+                          Prompt：{selectedMetadata?.aiAgentPrompt || '（未設定）'}
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

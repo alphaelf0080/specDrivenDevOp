@@ -79,6 +79,9 @@ export interface TreeData {
   isTemplate?: boolean;
   tags?: string;
   ownerId?: number;
+  enableAiAgent?: boolean;
+  aiAgentType?: string;
+  aiAgentPrompt?: string;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
@@ -148,9 +151,9 @@ export class TreeOperations {
         INSERT INTO trees (
           name, description, project_id, tree_type, data, config,
           direction, node_count, max_depth, version, is_template,
-          tags, owner_id
+          tags, owner_id, enable_ai_agent, ai_agent_type, ai_agent_prompt
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
         RETURNING *
       `;
 
@@ -168,6 +171,9 @@ export class TreeOperations {
         treeData.isTemplate || false,
         treeData.tags || null,
         treeData.ownerId || null,
+        treeData.enableAiAgent || false,
+        treeData.aiAgentType || null,
+        treeData.aiAgentPrompt || null,
       ];
 
       const result = await client.query(query, values);
@@ -341,6 +347,21 @@ export class TreeOperations {
         params.push(updates.tags);
       }
 
+      if (updates.enableAiAgent !== undefined) {
+        setClauses.push(`enable_ai_agent = $${paramIndex++}`);
+        params.push(updates.enableAiAgent);
+      }
+
+      if (updates.aiAgentType !== undefined) {
+        setClauses.push(`ai_agent_type = $${paramIndex++}`);
+        params.push(updates.aiAgentType);
+      }
+
+      if (updates.aiAgentPrompt !== undefined) {
+        setClauses.push(`ai_agent_prompt = $${paramIndex++}`);
+        params.push(updates.aiAgentPrompt);
+      }
+
       if (setClauses.length === 0) {
         // 沒有任何更新
         return existing;
@@ -488,6 +509,9 @@ export class TreeOperations {
       isTemplate: row.is_template as boolean | undefined,
       tags: row.tags as string | undefined,
       ownerId: row.owner_id as number | undefined,
+      enableAiAgent: row.enable_ai_agent as boolean | undefined,
+      aiAgentType: row.ai_agent_type as string | undefined,
+      aiAgentPrompt: row.ai_agent_prompt as string | undefined,
       createdAt: row.created_at as Date | undefined,
       updatedAt: row.updated_at as Date | undefined,
       deletedAt: row.deleted_at as Date | undefined,

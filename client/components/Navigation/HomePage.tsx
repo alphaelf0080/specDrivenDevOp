@@ -549,7 +549,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap, onOpenTr
               onClick={() => window.open('/templates/素材資源整合工具/assetExport 架構與工具說明.html', '_blank')}
             >
               <div className="doc-card-icon" style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM13.96 12.29L11.21 15.83L9.25 13.47L6.5 17H17.5L13.96 12.29Z" fill="white"/>
                 </svg>
               </div>
@@ -559,7 +559,6 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap, onOpenTr
                 <div className="doc-card-tags">
                   <span className="tag">Photoshop</span>
                   <span className="tag">素材管理</span>
-                  <span className="tag">自動化</span>
                 </div>
               </div>
             </div>
@@ -569,7 +568,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap, onOpenTr
               onClick={() => window.open('/templates/網頁資源查詢/網頁擷取分析工具說明.html', '_blank')}
             >
               <div className="doc-card-icon" style={{ background: 'linear-gradient(135deg, #4facfe, #00f2fe)' }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20 3H4C2.9 3 2 3.9 2 5V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V5C22 3.9 21.1 3 20 3ZM20 19H4V8H20V19ZM7 10H9V12H7V10ZM11 10H13V12H11V10ZM15 10H17V12H15V10Z" fill="white"/>
                 </svg>
               </div>
@@ -579,7 +578,6 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap, onOpenTr
                 <div className="doc-card-tags">
                   <span className="tag">Chrome擴展</span>
                   <span className="tag">封包監控</span>
-                  <span className="tag">效能分析</span>
                 </div>
               </div>
             </div>
@@ -589,7 +587,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap, onOpenTr
               onClick={() => window.open('/templates/遊戲側錄工具/架構說明網頁.html', '_blank')}
             >
               <div className="doc-card-icon" style={{ background: 'linear-gradient(135deg, #a8edea, #fed6e3)' }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M21 6H3C1.9 6 1 6.9 1 8V16C1 17.1 1.9 18 3 18H21C22.1 18 23 17.1 23 16V8C23 6.9 22.1 6 21 6ZM21 16H3V8H21V16ZM6 15H8V13H10V11H8V9H6V11H4V13H6V15ZM14.5 15C15.33 15 16 14.33 16 13.5C16 12.67 15.33 12 14.5 12C13.67 12 13 12.67 13 13.5C13 14.33 13.67 15 14.5 15ZM18.5 12C19.33 12 20 11.33 20 10.5C20 9.67 19.33 9 18.5 9C17.67 9 17 9.67 17 10.5C17 11.33 17.67 12 18.5 12Z" fill="white"/>
                 </svg>
               </div>
@@ -599,7 +597,6 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap, onOpenTr
                 <div className="doc-card-tags">
                   <span className="tag">數據收集</span>
                   <span className="tag">WebSocket</span>
-                  <span className="tag">Python</span>
                 </div>
               </div>
             </div>
@@ -609,7 +606,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap, onOpenTr
               onClick={() => window.open('/templates/遊戲效能分析/遊戲引擎重構效能分析報告.html', '_blank')}
             >
               <div className="doc-card-icon" style={{ background: 'linear-gradient(135deg, #ff9a9e, #fecfef)' }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM9 17H7V10H9V17ZM13 17H11V7H13V17ZM17 17H15V13H17V17Z" fill="white"/>
                 </svg>
               </div>
@@ -619,7 +616,25 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap, onOpenTr
                 <div className="doc-card-tags">
                   <span className="tag">效能分析</span>
                   <span className="tag">Benchmark</span>
-                  <span className="tag">重構</span>
+                </div>
+              </div>
+            </div>
+
+            <div 
+              className="doc-card"
+              onClick={() => window.open('/templates/遊戲側錄工具/wild_bounty_enhanced_report_tb_pg_wild_bounty_v1_002.html', '_blank')}
+            >
+              <div className="doc-card-icon" style={{ background: 'linear-gradient(135deg, #ffeaa7, #fdcb6e)' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2ZM16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z" fill="white"/>
+                </svg>
+              </div>
+              <div className="doc-card-content">
+                <h3>Wild Bounty 分析報告</h3>
+                <p>遊戲詳細分析報告 - RTP 計算與特徵統計</p>
+                <div className="doc-card-tags">
+                  <span className="tag">分析報告</span>
+                  <span className="tag">RTP</span>
                 </div>
               </div>
             </div>

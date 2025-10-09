@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import TreeDiagram, { TreeNode } from '../components/Tree/TreeDiagram';
 import './TreeEditorPage.css';
 
 interface TreeEditorPageProps {
@@ -32,6 +33,8 @@ const TreeEditorPage: React.FC<TreeEditorPageProps> = ({ treeId: propTreeId, uui
   const [treeData, setTreeData] = useState<TreeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [diagramData, setDiagramData] = useState<TreeNode | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
   // 從 URL 參數獲取 ID
   useEffect(() => {
@@ -78,6 +81,18 @@ const TreeEditorPage: React.FC<TreeEditorPageProps> = ({ treeId: propTreeId, uui
           setTreeData(data.data);
           setTreeId(data.data.id);
           setUuid(data.data.uuid);
+          
+          // 轉換資料庫格式到 TreeDiagram 格式
+          if (data.data.data) {
+            setDiagramData(data.data.data);
+          } else {
+            // 創建默認樹狀圖結構
+            setDiagramData({
+              id: 'root',
+              label: data.data.name || '根節點',
+              children: [],
+            });
+          }
         } else {
           throw new Error(data.error || '載入失敗');
         }
@@ -94,8 +109,102 @@ const TreeEditorPage: React.FC<TreeEditorPageProps> = ({ treeId: propTreeId, uui
     }
   }, [treeId, uuid]);
 
+  // 生成節點 ID
+  const generateNodeId = useCallback(() => {
+    if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+      return crypto.randomUUID();
+    }
+    return `node-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }, []);
+
+  // 創建新節點
+  const createNewTreeNode = useCallback((): TreeNode => ({
+    id: generateNodeId(),
+    label: '新節點',
+    children: [],
+    metadata: {
+      nodeId: Date.now(),
+      mask: {},
+    },
+  }), [generateNodeId]);
+
+  // 處理節點更新
+  const handleNodeUpdate = useCallback((nodeId: string, updates: Partial<TreeNode>) => {
+    setDiagramData(prevTree => {
+      if (!prevTree) return prevTree;
+      
+      const updateNodeInTree = (node: TreeNode): TreeNode => {
+        if (node.id === nodeId) {
+          return { ...node, ...updates };
+        }
+        if (node.children) {
+          return {
+            ...node,
+            children: node.children.map(updateNodeInTree),
+          };
+        }
+        return node;
+      };
+      
+      setHasChanges(true);
+      return updateNodeInTree(prevTree);
+    });
+  }, []);
+
+  // 處理節點刪除
+  const handleNodeDelete = useCallback((nodeId: string) => {
+    setDiagramData(prevTree => {
+      if (!prevTree) return prevTree;
+      
+      const deleteNodeInTree = (node: TreeNode): TreeNode | null => {
+        if (node.id === nodeId) {
+          return null;
+        }
+        if (node.children) {
+          return {
+            ...node,
+            children: node.children
+              .map(deleteNodeInTree)
+              .filter((child): child is TreeNode => child !== null),
+          };
+        }
+        return node;
+      };
+      
+      setHasChanges(true);
+      const result = deleteNodeInTree(prevTree);
+      return result || prevTree;
+    });
+  }, []);
+
+  // 處理新增子節點
+  const handleAddChild = useCallback((parentId: string) => {
+    setDiagramData(prevTree => {
+      if (!prevTree) return prevTree;
+      
+      const addChildToNode = (node: TreeNode): TreeNode => {
+        if (node.id === parentId) {
+          return {
+            ...node,
+            children: [...(node.children || []), createNewTreeNode()],
+          };
+        }
+        if (node.children) {
+          return {
+            ...node,
+            children: node.children.map(addChildToNode),
+          };
+        }
+        return node;
+      };
+      
+      setHasChanges(true);
+      return addChildToNode(prevTree);
+    });
+  }, [createNewTreeNode]);
+
   const handleSave = async () => {
-    if (!treeId || !treeData) return;
+    if (!treeId || !treeData || !diagramData) return;
 
     try {
       const response = await fetch(`${API_BASE_URL}/trees/${treeId}`, {
@@ -106,7 +215,7 @@ const TreeEditorPage: React.FC<TreeEditorPageProps> = ({ treeId: propTreeId, uui
         body: JSON.stringify({
           name: treeData.name,
           description: treeData.description,
-          data: treeData.data,
+          data: diagramData, // 保存樹狀圖資料
           config: treeData.config,
         }),
       });
@@ -115,7 +224,11 @@ const TreeEditorPage: React.FC<TreeEditorPageProps> = ({ treeId: propTreeId, uui
 
       if (data.success) {
         console.log('✅ 儲存成功');
+        setHasChanges(false);
         alert('儲存成功!');
+        // 重新載入資料
+        const updatedData = { ...treeData, data: diagramData };
+        setTreeData(updatedData);
       } else {
         throw new Error(data.error || '儲存失敗');
       }
@@ -126,6 +239,11 @@ const TreeEditorPage: React.FC<TreeEditorPageProps> = ({ treeId: propTreeId, uui
   };
 
   const handleBackToHome = () => {
+    if (hasChanges) {
+      if (!confirm('有未儲存的變更,確定要離開嗎?')) {
+        return;
+      }
+    }
     if (onClose) {
       onClose();
     } else {
@@ -144,7 +262,7 @@ const TreeEditorPage: React.FC<TreeEditorPageProps> = ({ treeId: propTreeId, uui
     );
   }
 
-  if (error || !treeData) {
+  if (error || !treeData || !diagramData) {
     return (
       <div className="tree-editor-page">
         <div className="error-container">
@@ -169,99 +287,41 @@ const TreeEditorPage: React.FC<TreeEditorPageProps> = ({ treeId: propTreeId, uui
   return (
     <div className="tree-editor-page">
       <header className="tree-editor-header">
-        <div className="header-left">
-          <button className="back-btn" onClick={handleBackToHome} title="返回首頁">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z" fill="currentColor"/>
-            </svg>
-          </button>
-          <div className="header-info">
-            <h1>{treeData.name}</h1>
-            {treeData.description && (
-              <p className="tree-description">{treeData.description}</p>
-            )}
-            <div className="tree-meta">
-              <span className="meta-badge">
-                🔑 {treeData.uuid.slice(0, 8)}...
-              </span>
-              <span className="meta-badge">
-                🔵 {treeData.node_count} 個節點
-              </span>
-              <span className="meta-badge">
-                🔷 深度 {treeData.max_depth}
-              </span>
-              <span className="meta-badge">
-                📌 版本 {treeData.version}
-              </span>
-              {treeData.project_name && (
-                <span className="meta-badge project-badge">
-                  📁 {treeData.project_name}
-                </span>
-              )}
-            </div>
-          </div>
+        <button className="back-btn" onClick={handleBackToHome} title="返回首頁">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z" fill="currentColor"/>
+          </svg>
+          返回首頁
+        </button>
+        
+        <div className="header-title">
+          {treeData.project_name && (
+            <span className="project-name">� {treeData.project_name}</span>
+          )}
+          <h1 className="tree-name">{treeData.name}</h1>
         </div>
-        <div className="header-right">
-          <button className="save-btn" onClick={handleSave}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M17 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V7L17 3ZM12 19C10.34 19 9 17.66 9 16C9 14.34 10.34 13 12 13C13.66 13 15 14.34 15 16C15 17.66 13.66 19 12 19ZM15 9H5V5H15V9Z" fill="currentColor"/>
-            </svg>
-            儲存
-          </button>
-          <button className="close-btn" onClick={handleBackToHome}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
-            </svg>
-          </button>
-        </div>
+        
+        <button 
+          className="save-btn" 
+          onClick={handleSave} 
+          disabled={!hasChanges}
+          title={hasChanges ? '儲存變更' : '無變更'}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V7L17 3ZM12 19C10.34 19 9 17.66 9 16C9 14.34 10.34 13 12 13C13.66 13 15 14.34 15 16C15 17.66 13.66 19 12 19ZM15 9H5V5H15V9Z" fill="currentColor"/>
+          </svg>
+          儲存
+          {hasChanges && <span className="changes-dot">●</span>}
+        </button>
       </header>
 
-      <main className="tree-editor-content">
-        <div className="editor-placeholder">
-          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22 11V3H15V6H9V3H2V11H9V8H11V18H15V21H22V13H15V16H13V8H15V11H22Z" fill="currentColor" opacity="0.3"/>
-          </svg>
-          <h2>樹狀圖編輯器</h2>
-          <p>🚧 編輯器功能開發中...</p>
-          <div className="tree-info-panel">
-            <h3>樹狀圖資訊</h3>
-            <div className="info-grid">
-              <div className="info-item">
-                <label>ID:</label>
-                <span>{treeData.id}</span>
-              </div>
-              <div className="info-item">
-                <label>UUID:</label>
-                <span>{treeData.uuid}</span>
-              </div>
-              <div className="info-item">
-                <label>類型:</label>
-                <span>{treeData.tree_type}</span>
-              </div>
-              <div className="info-item">
-                <label>節點數:</label>
-                <span>{treeData.node_count}</span>
-              </div>
-              <div className="info-item">
-                <label>最大深度:</label>
-                <span>{treeData.max_depth}</span>
-              </div>
-              <div className="info-item">
-                <label>版本:</label>
-                <span>{treeData.version}</span>
-              </div>
-              <div className="info-item">
-                <label>建立時間:</label>
-                <span>{new Date(treeData.created_at).toLocaleString('zh-TW')}</span>
-              </div>
-              <div className="info-item">
-                <label>更新時間:</label>
-                <span>{new Date(treeData.updated_at).toLocaleString('zh-TW')}</span>
-              </div>
-            </div>
-          </div>
-          <p className="hint">💡 提示: 您可以整合 ReactFlow 或其他樹狀圖庫來實現完整的編輯功能</p>
-        </div>
+      <main className="tree-editor-content tree-editor-active">
+        <TreeDiagram
+          data={diagramData}
+          onNodeUpdate={handleNodeUpdate}
+          onDeleteNode={handleNodeDelete}
+          onAddNode={handleAddChild}
+        />
       </main>
     </div>
   );
