@@ -8,7 +8,18 @@ const db = getDatabase();
  */
 router.get('/', async (req, res) => {
     try {
-        const result = await db.query('SELECT * FROM projects WHERE deleted_at IS NULL ORDER BY created_at DESC');
+        const { limit, offset, orderBy = 'updated_at DESC' } = req.query;
+        let query = 'SELECT * FROM projects WHERE deleted_at IS NULL';
+        // 排序
+        query += ` ORDER BY ${orderBy}`;
+        // 分頁
+        if (limit) {
+            query += ` LIMIT ${limit}`;
+        }
+        if (offset) {
+            query += ` OFFSET ${offset}`;
+        }
+        const result = await db.query(query);
         res.json({
             success: true,
             data: result.rows,
@@ -217,6 +228,52 @@ router.delete('/:id/permanent', async (req, res) => {
         res.status(500).json({
             success: false,
             error: '永久刪除專案失敗',
+            message: error instanceof Error ? error.message : '未知錯誤',
+        });
+    }
+});
+/**
+ * 更新專案樹狀圖資料
+ * PUT /api/projects/:id/tree
+ */
+router.put('/:id/tree', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { tree_data, tree_config } = req.body;
+        // 驗證專案是否存在
+        const checkResult = await db.query('SELECT id FROM projects WHERE id = $1 AND deleted_at IS NULL', [id]);
+        if (checkResult.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: '專案不存在',
+            });
+        }
+        // 更新樹狀圖資料
+        const updateResult = await db.query(`UPDATE projects 
+       SET tree_data = $1,
+           tree_config = $2,
+           tree_version = COALESCE(tree_version, 0) + 1,
+           tree_updated_at = NOW(),
+           updated_at = NOW()
+       WHERE id = $3 AND deleted_at IS NULL
+       RETURNING *`, [JSON.stringify(tree_data), tree_config ? JSON.stringify(tree_config) : null, id]);
+        if (updateResult.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: '更新失敗',
+            });
+        }
+        res.json({
+            success: true,
+            data: updateResult.rows[0],
+            message: '樹狀圖已更新',
+        });
+    }
+    catch (error) {
+        console.error('❌ 更新專案樹狀圖失敗:', error);
+        res.status(500).json({
+            success: false,
+            error: '更新專案樹狀圖失敗',
             message: error instanceof Error ? error.message : '未知錯誤',
         });
     }

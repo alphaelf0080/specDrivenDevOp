@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>樹狀圖測試頁面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        h1 { color: #333; }
+        .section {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        pre {
+            background: #fff;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>🌳 樹狀圖資料庫測試</h1>
+    
+    <div class="section">
+        <h2>1. 測試專案 API</h2>
+        <button onclick="testGetProjects()">獲取專案列表</button>
+        <button onclick="testGetProject(4)">獲取專案 #4</button>
+        <pre id="projectResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>2. 測試樹狀圖 API</h2>
+        <button onclick="testCreateTree()">為專案 #4 創建樹狀圖</button>
+        <button onclick="testGetTrees()">獲取樹狀圖列表</button>
+        <button onclick="testGetProjectMainTree(4)">獲取專案 #4 主要樹狀圖</button>
+        <pre id="treeResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>3. 測試更新樹狀圖</h2>
+        <input type="number" id="treeId" placeholder="Tree ID" value="1" style="padding: 8px; margin: 5px;">
+        <button onclick="testUpdateTree()">更新樹狀圖</button>
+        <pre id="updateResult"></pre>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5010/api';
+
+        async function apiCall(url, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${url}`, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+                const data = await response.json();
+                return { success: response.ok, data };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        function display(elementId, data) {
+            document.getElementById(elementId).textContent = JSON.stringify(data, null, 2);
+        }
+
+        // 專案測試
+        async function testGetProjects() {
+            const result = await apiCall('/projects');
+            display('projectResult', result);
+        }
+
+        async function testGetProject(id) {
+            const result = await apiCall(`/projects/${id}`);
+            display('projectResult', result);
+        }
+
+        // 樹狀圖測試
+        async function testCreateTree() {
+            const treeData = {
+                name: "Test Project - 專案樹狀圖",
+                description: "測試樹狀圖",
+                projectId: 4,
+                treeType: "ui_layout",
+                direction: "LR",
+                data: {
+                    id: "root",
+                    label: "專案根節點",
+                    children: [
+                        {
+                            id: "node-1",
+                            label: "子節點 1",
+                            children: []
+                        },
+                        {
+                            id: "node-2",
+                            label: "子節點 2",
+                            children: []
+                        }
+                    ]
+                },
+                setAsMain: true
+            };
+            
+            const result = await apiCall('/trees', {
+                method: 'POST',
+                body: JSON.stringify(treeData)
+            });
+            display('treeResult', result);
+        }
+
+        async function testGetTrees() {
+            const result = await apiCall('/trees');
+            display('treeResult', result);
+        }
+
+        async function testGetProjectMainTree(projectId) {
+            const result = await apiCall(`/trees/project/${projectId}/main`);
+            display('treeResult', result);
+        }
+
+        async function testUpdateTree() {
+            const treeId = document.getElementById('treeId').value;
+            const updateData = {
+                data: {
+                    id: "root",
+                    label: "更新後的根節點",
+                    children: [
+                        {
+                            id: "node-1",
+                            label: "更新的子節點 1",
+                            children: []
+                        },
+                        {
+                            id: "node-2",
+                            label: "更新的子節點 2",
+                            children: [
+                                {
+                                    id: "node-2-1",
+                                    label: "新的孫節點",
+                                    children: []
+                                }
+                            ]
+                        },
+                        {
+                            id: "node-3",
+                            label: "新增的子節點 3",
+                            children: []
+                        }
+                    ]
+                }
+            };
+            
+            const result = await apiCall(`/trees/${treeId}`, {
+                method: 'PUT',
+                body: JSON.stringify(updateData)
+            });
+            display('updateResult', result);
+        }
+
+        // 頁面載入時自動測試
+        window.onload = () => {
+            console.log('🚀 測試頁面已載入');
+            testGetProjects();
+        };
+    </script>
+</body>
+</html>

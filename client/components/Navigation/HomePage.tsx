@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { getTreeHistory, formatRelativeTime, TreeHistoryItem } from '../../utils/treeHistory';
 import { useDbInit } from '../../hooks/useDbInit';
+import TreeCard from './TreeCard';
 import './HomePage.css';
 
 interface HomePageProps {
   onNavigate: (page: string) => void;
   onOpenMindMap?: (id: string, name: string) => void;
+  onOpenTree?: (treeId: number, uuid: string) => void;
 }
 
 interface MindMapItem {
@@ -15,15 +17,48 @@ interface MindMapItem {
   nodeCount: number;
 }
 
+interface DbTreeItem {
+  id: number;
+  uuid: string;
+  name: string;
+  description?: string;
+  project_id?: number;
+  project_name?: string;
+  node_count: number;
+  max_depth: number;
+  updated_at: string;
+  tree_type: string;
+}
+
 const API_BASE_URL = '/api';
 
-const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap }) => {
+const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap, onOpenTree }) => {
   const [recentMindMaps, setRecentMindMaps] = useState<MindMapItem[]>([]);
   const [recentTrees, setRecentTrees] = useState<TreeHistoryItem[]>([]);
+  const [dbTrees, setDbTrees] = useState<DbTreeItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [treesLoading, setTreesLoading] = useState(true);
 
   // 資料庫初始化
   const { projects, loading: dbLoading, error: dbError, initialized } = useDbInit(true);
+
+  // 載入資料庫中的樹狀圖
+  const loadDbTrees = async () => {
+    try {
+      setTreesLoading(true);
+      const response = await fetch(`${API_BASE_URL}/trees?limit=10&sort=updated_at&order=DESC`);
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        console.log('✅ 載入資料庫樹狀圖:', data.data.length, '筆');
+        setDbTrees(data.data);
+      }
+    } catch (error) {
+      console.error('❌ 載入資料庫樹狀圖失敗:', error);
+    } finally {
+      setTreesLoading(false);
+    }
+  };
 
   // 載入最新的三個心智圖
   useEffect(() => {
@@ -45,6 +80,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap }) => {
     };
 
     loadRecentMindMaps();
+    loadDbTrees(); // 載入資料庫樹狀圖
     
     // 載入樹狀圖歷史
     const treeHistory = getTreeHistory();
@@ -64,6 +100,94 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap }) => {
       console.error('❌ 資料庫初始化錯誤:', dbError);
     }
   }, [initialized, dbLoading, dbError, projects]);
+
+  // 處理樹狀圖操作
+  const handleOpenTree = (id: number, uuid: string) => {
+    console.log('🌳 開啟樹狀圖:', { id, uuid });
+    if (onOpenTree) {
+      onOpenTree(id, uuid);
+    } else {
+      // 暫時導航到專案頁面
+      console.warn('⚠️ onOpenTree callback 未提供,使用默認導航');
+      onNavigate('project');
+    }
+  };
+
+  const handleEditTree = async (id: number) => {
+    console.log('✏️ 編輯樹狀圖:', id);
+    // 開啟編輯模式
+    handleOpenTree(id, '');
+  };
+
+  const handleDeleteTree = async (id: number) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/trees/${id}`, {
+        method: 'DELETE',
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log('✅ 刪除樹狀圖成功:', id);
+        // 重新載入列表
+        loadDbTrees();
+      } else {
+        console.error('❌ 刪除樹狀圖失敗:', data.error);
+        alert(`刪除失敗: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('❌ 刪除樹狀圖錯誤:', error);
+      alert('刪除失敗,請稍後再試');
+    }
+  };
+
+  const handleCreateTree = async () => {
+    const name = prompt('請輸入樹狀圖名稱:');
+    if (!name) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/trees`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          description: '',
+          tree_type: 'general',
+          data: {
+            nodes: [{
+              id: '1',
+              type: 'root',
+              data: { label: '根節點' },
+              position: { x: 0, y: 0 },
+            }],
+            edges: [],
+          },
+          config: {
+            direction: 'TB',
+            theme: 'default',
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('✅ 創建樹狀圖成功:', data.data);
+        // 重新載入列表
+        loadDbTrees();
+        // 開啟新創建的樹狀圖
+        handleOpenTree(data.data.id, data.data.uuid);
+      } else {
+        console.error('❌ 創建樹狀圖失敗:', data.error);
+        alert(`創建失敗: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('❌ 創建樹狀圖錯誤:', error);
+      alert('創建失敗,請稍後再試');
+    }
+  };
 
   const handleOpenMindMap = (id: string, name: string) => {
     console.log('🚀 HomePage: Opening mindmap:', { id, name });
@@ -350,47 +474,155 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenMindMap }) => {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ verticalAlign: 'middle', marginRight: '8px' }}>
                 <path d="M12 2L4 5V11.09C4 16.14 7.41 20.85 12 22C16.59 20.85 20 16.14 20 11.09V5L12 2ZM12 11L8 9L12 7L16 9L12 11Z" fill="currentColor"/>
               </svg>
-              最近查看的樹狀圖
+              樹狀圖管理
             </h2>
+            <button 
+              className="create-tree-btn"
+              onClick={handleCreateTree}
+              title="創建新樹狀圖"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="currentColor"/>
+              </svg>
+              創建樹狀圖
+            </button>
           </div>
 
           <div className="tree-list">
-            {recentTrees.length > 0 ? (
-              recentTrees.map((tree) => (
-                <div
+            {treesLoading ? (
+              <div className="loading-state">
+                <div className="spinner"></div>
+                <p>載入中...</p>
+              </div>
+            ) : dbTrees.length > 0 ? (
+              dbTrees.map((tree) => (
+                <TreeCard
                   key={tree.id}
-                  className="tree-card"
-                  onClick={() => onNavigate(tree.path.replace('/', ''))}
-                >
-                  <div className="tree-card-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M22 11V3H15V6H9V3H2V11H9V8H11V18H15V21H22V13H15V16H13V8H15V11H22Z" fill="currentColor"/>
-                    </svg>
-                  </div>
-                  <div className="tree-card-content">
-                    <div className="tree-card-title">{tree.name}</div>
-                    <div className="tree-card-time">
-                      {formatRelativeTime(tree.visitedAt)}
-                    </div>
-                  </div>
-                  <div className="tree-card-action">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
+                  id={tree.id}
+                  uuid={tree.uuid}
+                  name={tree.name}
+                  description={tree.description}
+                  projectId={tree.project_id}
+                  projectName={tree.project_name}
+                  nodeCount={tree.node_count}
+                  maxDepth={tree.max_depth}
+                  updatedAt={tree.updated_at}
+                  onOpen={handleOpenTree}
+                  onEdit={handleEditTree}
+                  onDelete={handleDeleteTree}
+                />
               ))
             ) : (
-              <div className="empty-state">
-                <p>尚未查看任何樹狀圖</p>
+              <div className="tree-empty-state">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M22 11V3H15V6H9V3H2V11H9V8H11V18H15V21H22V13H15V16H13V8H15V11H22Z" fill="currentColor"/>
+                </svg>
+                <p>尚無樹狀圖</p>
                 <button 
-                  className="create-first-btn"
-                  onClick={() => onNavigate('tree-ui-layout')}
+                  className="create-tree-btn"
+                  onClick={handleCreateTree}
                 >
-                  查看第一個樹狀圖
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="currentColor"/>
+                  </svg>
+                  創建第一個樹狀圖
                 </button>
               </div>
             )}
+          </div>
+        </section>
+
+        {/* 技術文檔區塊 */}
+        <section className="docs-section">
+          <div className="section-header">
+            <h2>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ verticalAlign: 'middle', marginRight: '8px' }}>
+                <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2ZM16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z" fill="currentColor"/>
+              </svg>
+              技術文檔與工具說明
+            </h2>
+          </div>
+
+          <div className="docs-grid">
+            <div 
+              className="doc-card"
+              onClick={() => window.open('/templates/素材資源整合工具/assetExport 架構與工具說明.html', '_blank')}
+            >
+              <div className="doc-card-icon" style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM13.96 12.29L11.21 15.83L9.25 13.47L6.5 17H17.5L13.96 12.29Z" fill="white"/>
+                </svg>
+              </div>
+              <div className="doc-card-content">
+                <h3>素材資源整合工具</h3>
+                <p>AssetExport 架構與工具說明 - Photoshop 圖層匯出系統</p>
+                <div className="doc-card-tags">
+                  <span className="tag">Photoshop</span>
+                  <span className="tag">素材管理</span>
+                  <span className="tag">自動化</span>
+                </div>
+              </div>
+            </div>
+
+            <div 
+              className="doc-card"
+              onClick={() => window.open('/templates/網頁資源查詢/網頁擷取分析工具說明.html', '_blank')}
+            >
+              <div className="doc-card-icon" style={{ background: 'linear-gradient(135deg, #4facfe, #00f2fe)' }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 3H4C2.9 3 2 3.9 2 5V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V5C22 3.9 21.1 3 20 3ZM20 19H4V8H20V19ZM7 10H9V12H7V10ZM11 10H13V12H11V10ZM15 10H17V12H15V10Z" fill="white"/>
+                </svg>
+              </div>
+              <div className="doc-card-content">
+                <h3>網頁擷取分析工具</h3>
+                <p>Web Game Packet Monitor - Chrome 擴展使用說明</p>
+                <div className="doc-card-tags">
+                  <span className="tag">Chrome擴展</span>
+                  <span className="tag">封包監控</span>
+                  <span className="tag">效能分析</span>
+                </div>
+              </div>
+            </div>
+
+            <div 
+              className="doc-card"
+              onClick={() => window.open('/templates/遊戲側錄工具/架構說明網頁.html', '_blank')}
+            >
+              <div className="doc-card-icon" style={{ background: 'linear-gradient(135deg, #a8edea, #fed6e3)' }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 6H3C1.9 6 1 6.9 1 8V16C1 17.1 1.9 18 3 18H21C22.1 18 23 17.1 23 16V8C23 6.9 22.1 6 21 6ZM21 16H3V8H21V16ZM6 15H8V13H10V11H8V9H6V11H4V13H6V15ZM14.5 15C15.33 15 16 14.33 16 13.5C16 12.67 15.33 12 14.5 12C13.67 12 13 12.67 13 13.5C13 14.33 13.67 15 14.5 15ZM18.5 12C19.33 12 20 11.33 20 10.5C20 9.67 19.33 9 18.5 9C17.67 9 17 9.67 17 10.5C17 11.33 17.67 12 18.5 12Z" fill="white"/>
+                </svg>
+              </div>
+              <div className="doc-card-content">
+                <h3>遊戲側錄工具</h3>
+                <p>Game Dump Tool 系統架構與數據收集流程</p>
+                <div className="doc-card-tags">
+                  <span className="tag">數據收集</span>
+                  <span className="tag">WebSocket</span>
+                  <span className="tag">Python</span>
+                </div>
+              </div>
+            </div>
+
+            <div 
+              className="doc-card"
+              onClick={() => window.open('/templates/遊戲效能分析/遊戲引擎重構效能分析報告.html', '_blank')}
+            >
+              <div className="doc-card-icon" style={{ background: 'linear-gradient(135deg, #ff9a9e, #fecfef)' }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM9 17H7V10H9V17ZM13 17H11V7H13V17ZM17 17H15V13H17V17Z" fill="white"/>
+                </svg>
+              </div>
+              <div className="doc-card-content">
+                <h3>遊戲效能分析</h3>
+                <p>遊戲引擎重構效能分析報告 - RNG 效能優化與對比</p>
+                <div className="doc-card-tags">
+                  <span className="tag">效能分析</span>
+                  <span className="tag">Benchmark</span>
+                  <span className="tag">重構</span>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </main>

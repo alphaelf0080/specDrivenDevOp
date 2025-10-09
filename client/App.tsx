@@ -5,13 +5,14 @@ import MindMapManagerPage from './components/MindMap/MindMapManagerPage';
 import HomePage from './components/Navigation/HomePage';
 import ProjectManager from './components/ProjectManager/ProjectManager';
 import ProjectPage from './pages/ProjectPage';
+import TreeEditorPage from './pages/TreeEditorPage';
 import { TreeDemoPage } from './components/Tree';
 import TreeUiLayoutPage from './components/Tree/TreeUiLayoutPage';
 import TreePsdStructurePage from './components/Tree/TreePsdStructurePage';
 import TreeUiLayoutRichPage from './components/Tree/TreeUiLayoutRichPage';
 import './App.css';
 
-type PageView = 'home' | 'project-page' | 'project-manager' | 'mindmap-manager' | 'sdd-mindmap' | 'demo-mindmap' | 'slot-engine' | 'tree-demo' | 'tree-ui-layout' | 'tree-ui-layout-rich' | 'tree-psd-structure';
+type PageView = 'home' | 'project-page' | 'project-manager' | 'mindmap-manager' | 'sdd-mindmap' | 'demo-mindmap' | 'slot-engine' | 'tree-demo' | 'tree-ui-layout' | 'tree-ui-layout-rich' | 'tree-psd-structure' | 'tree-editor';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageView>('home');
@@ -20,7 +21,7 @@ function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const view = params.get('view') as PageView;
-    if (view && ['project-page', 'project-manager', 'mindmap-manager', 'sdd-mindmap', 'demo-mindmap', 'slot-engine', 'tree-demo', 'tree-ui-layout', 'tree-ui-layout-rich', 'tree-psd-structure'].includes(view)) {
+    if (view && ['project-page', 'project-manager', 'mindmap-manager', 'sdd-mindmap', 'demo-mindmap', 'slot-engine', 'tree-demo', 'tree-ui-layout', 'tree-ui-layout-rich', 'tree-psd-structure', 'tree-editor'].includes(view)) {
       setCurrentPage(view);
     }
   }, []);
@@ -136,6 +137,9 @@ function App() {
     case 'tree-psd-structure':
       return <TreePsdStructurePage onBackHome={handleBackToHome} />;
 
+    case 'tree-editor':
+      return <TreeEditorPage onClose={handleBackToHome} />;
+
     case 'home':
     default:
       return <HomePage 
@@ -150,6 +154,18 @@ function App() {
           window.history.pushState({}, '', url);
           console.log('📄 App: Setting currentPage to mindmap-manager');
           setCurrentPage('mindmap-manager');
+        }}
+        onOpenTree={(treeId, uuid) => {
+          console.log('🌳 App: onOpenTree called with:', { treeId, uuid });
+          // 設定 URL 參數並導覽到樹狀圖編輯頁面
+          const url = new URL(window.location.href);
+          url.searchParams.set('view', 'tree-editor');
+          url.searchParams.set('treeId', treeId.toString());
+          url.searchParams.set('uuid', uuid);
+          console.log('🔗 App: Setting URL to:', url.toString());
+          window.history.pushState({}, '', url);
+          console.log('📄 App: Setting currentPage to tree-editor');
+          setCurrentPage('tree-editor');
         }}
       />;
   }

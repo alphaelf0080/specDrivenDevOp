@@ -11,6 +11,7 @@ import { getDatabase } from "./database/db.js";
 import { initializeProjectsTable } from "./database/db-init.js";
 // 路由
 import projectsRouter from "./routes/projects.js";
+import treesRouter from "./routes/trees.js";
 dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -247,6 +248,8 @@ app.get("/api/db/init", async (req, res) => {
 });
 // 專案管理 API 路由
 app.use("/api/projects", projectsRouter);
+// 樹狀圖 API 路由
+app.use("/api/trees", treesRouter);
 app.get("/api", (req, res) => {
     res.json({
         name: "Slot Game API",

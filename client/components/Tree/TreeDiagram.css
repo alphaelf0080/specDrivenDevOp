@@ -3,11 +3,21 @@
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: 80px 1fr 320px;
-  grid-template-rows: auto 1fr;
   background: #0f172a;
   color: #e2e8f0;
   transition: grid-template-columns 0.3s ease;
+}
+
+/* 獨立模式 - 完整布局 */
+.tree-diagram-container.standalone-mode {
+  grid-template-columns: 80px 1fr 320px;
+  grid-template-rows: auto 1fr;
+}
+
+/* 嵌入模式 - 簡化布局(只有主編輯區+右側面板) */
+.tree-diagram-container.embedded-mode {
+  grid-template-columns: 1fr 320px;
+  grid-template-rows: 1fr;
 }
 
 /* 工具列橫跨三欄 - Dark 模式 */
@@ -37,17 +47,40 @@
 }
 
 /* 中間主要內容區（樹狀圖）- Dark 模式 */
-.tree-diagram-flow {
+/* 獨立模式 */
+.tree-diagram-container.standalone-mode .tree-diagram-flow {
   grid-column: 2;
   grid-row: 2;
   background: #1e293b;
   position: relative;
 }
 
+/* 嵌入模式 */
+.tree-diagram-container.embedded-mode .tree-diagram-flow {
+  grid-column: 1;
+  grid-row: 1;
+  background: #1e293b;
+  position: relative;
+}
+
 /* 右側工具面板 - Dark 模式 */
-.tree-sidebar-right {
+/* 獨立模式 */
+.tree-diagram-container.standalone-mode .tree-sidebar-right {
   grid-column: 3;
   grid-row: 2;
+  background: #1e293b;
+  border-left: 1px solid #334155;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  transition: opacity 0.2s ease, border-left 0.2s ease;
+}
+
+/* 嵌入模式 */
+.tree-diagram-container.embedded-mode .tree-sidebar-right {
+  grid-column: 2;
+  grid-row: 1;
   background: #1e293b;
   border-left: 1px solid #334155;
   padding: 0;

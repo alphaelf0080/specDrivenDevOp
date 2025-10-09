@@ -1236,7 +1236,7 @@ CREATE INDEX idx_game_mode ON tb_pg_wild_bounty_v1_001(gm);</code></pre>
             raise ValueError(f"Missing required field: {field}")
     
     # 數據類型驗證
-    if not isinstance(data['spin_count'], int) or data['spin_count'] <= 0:
+    if not isinstance(data['spin_count'], int) or data['spin_count'] &lt;= 0:
         raise ValueError("Invalid spin count")
     
     return True</code></pre>

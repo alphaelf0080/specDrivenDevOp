@@ -59,6 +59,8 @@ export type TreeDiagramProps = {
   onDeleteNode?: (nodeId: string) => void;
   defaultCollapsedIds?: string[];
   onBackHome?: () => void;
+  viewportKeyPrefix?: string; // 用於在不同頁面/專案中區分視圖狀態
+  embedded?: boolean; // 是否為嵌入模式(專案頁面中)
 };
 
 const nodeDefaults = { width: 200, height: 56 };
@@ -295,7 +297,7 @@ const ColoredSmoothEdge = (props: EdgeProps) => {
   );
 };
 
-export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, nodeHeight = 56, renderNode, onSelectNode, onNodeUpdate, onAddNode, onDeleteNode, defaultCollapsedIds, onBackHome }: TreeDiagramProps) {
+export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, nodeHeight = 56, renderNode, onSelectNode, onNodeUpdate, onAddNode, onDeleteNode, defaultCollapsedIds, onBackHome, viewportKeyPrefix, embedded = false }: TreeDiagramProps) {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
     (defaultCollapsedIds || []).forEach(id => { init[id] = true; });
@@ -324,8 +326,10 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
   const hasInitialized = useRef(false);
   
-  // 視圖狀態持久化
-  const viewportKey = `tree-viewport-${data.id || 'default'}`;
+  // 視圖狀態持久化 - 使用 viewportKeyPrefix 來區分不同頁面/專案的視圖狀態
+  const viewportKey = viewportKeyPrefix 
+    ? `tree-viewport-${viewportKeyPrefix}-${data.id || 'default'}`
+    : `tree-viewport-${data.id || 'default'}`;
   const [viewport, setViewport] = useState<Viewport>(() => {
     // 從 localStorage 載入已保存的視圖狀態
     try {
@@ -348,9 +352,20 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
 
   const isPanelOpen = !!selectedNode;
 
-  const containerStyle = useMemo(() => ({
-    gridTemplateColumns: `80px 1fr ${isPanelOpen ? `${panelWidth}px` : '0px'}`,
-  }), [isPanelOpen, panelWidth]);
+  const containerStyle = useMemo(() => {
+    if (embedded) {
+      // 嵌入模式: 只有主編輯區 + 右側面板
+      return {
+        gridTemplateColumns: `1fr ${isPanelOpen ? `${panelWidth}px` : '0px'}`,
+        gridTemplateRows: '1fr',
+      };
+    }
+    // 獨立模式: 左側導航 + 上方工具欄 + 主編輯區 + 右側面板
+    return {
+      gridTemplateColumns: `80px 1fr ${isPanelOpen ? `${panelWidth}px` : '0px'}`,
+      gridTemplateRows: 'auto 1fr',
+    };
+  }, [embedded, isPanelOpen, panelWidth]);
 
   const closeContextMenu = useCallback(() => {
     setContextMenu({ visible: false, x: 0, y: 0, node: null });
@@ -522,6 +537,18 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
     
     return { nodes: nodesWithMetadata, edges: visibleEdges };
   }, [fullLayout, collapsed, data]);
+
+  // 自動選中根節點 (如果沒有選中任何節點且有節點存在)
+  useEffect(() => {
+    if (!selectedNode && nodes.length > 0) {
+      // 找到根節點 (通常是第一個節點或 id 為 'root' 的節點)
+      const rootNode = nodes.find(n => n.id === data.id) || nodes[0];
+      if (rootNode) {
+        console.log('[TreeDiagram] 自動選中根節點:', rootNode.id);
+        setSelectedNode(rootNode);
+      }
+    }
+  }, [nodes, selectedNode, data.id]);
 
   const toggleNodeCollapse = useCallback((nodeId: string) => {
     setCollapsed(prev => ({ ...prev, [nodeId]: !prev[nodeId] }));
@@ -811,17 +838,27 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
           }
         }
         
-        // 首次訪問，使用 fitView
-        console.log('[TreeDiagram] 首次訪問，使用 fitView');
+        // 首次訪問或沒有保存的視圖狀態，使用 fitView 居中顯示
+        console.log('[TreeDiagram] 首次訪問，使用 fitView 居中顯示根節點');
         setTimeout(() => {
-          reactFlowInstance.fitView({ padding: 0.1 });
-        }, 100);
+          // 使用 fitView 並設置較大的 padding 和居中選項
+          reactFlowInstance.fitView({ 
+            padding: 0.2,  // 增加 padding 讓節點不要太靠邊
+            includeHiddenNodes: false,
+            minZoom: 0.5,
+            maxZoom: 1.5,
+            duration: 200  // 添加動畫效果
+          });
+        }, 200);  // 增加延遲時間，確保節點已完全渲染
       } catch (error) {
         console.warn('Failed to initialize viewport:', error);
         // 發生錯誤時，使用 fitView 作為後備方案
         setTimeout(() => {
-          reactFlowInstance.fitView({ padding: 0.1 });
-        }, 100);
+          reactFlowInstance.fitView({ 
+            padding: 0.2,
+            duration: 200
+          });
+        }, 200);
       }
       
       hasInitialized.current = true;
@@ -877,44 +914,48 @@ export default function TreeDiagram({ data, direction = 'LR', nodeWidth = 200, n
   const isDeleteDisabled = !contextMenu.node || contextMenu.node.id === data.id || !onDeleteNode;
 
   return (
-    <div className="tree-diagram-container" style={containerStyle}>
-      {/* 工具列 */}
-      <div className="tree-toolbar">
-        {onBackHome && (
-          <button className="btn-back-home" onClick={onBackHome}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 2L2 8L8 14M2 8H14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            返回首頁
+    <div className={`tree-diagram-container ${embedded ? 'embedded-mode' : 'standalone-mode'}`} style={containerStyle}>
+      {/* 工具列 - 只在非嵌入模式顯示 */}
+      {!embedded && (
+        <div className="tree-toolbar">
+          {onBackHome && (
+            <button className="btn-back-home" onClick={onBackHome}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 2L2 8L8 14M2 8H14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              返回首頁
+            </button>
+          )}
+          <span className="tree-title">樹枝圖</span>
+          <button className="btn-expand-all" onClick={() => setCollapsed({})}>
+            全部展開
           </button>
-        )}
-        <span className="tree-title">樹枝圖</span>
-        <button className="btn-expand-all" onClick={() => setCollapsed({})}>
-          全部展開
-        </button>
-      </div>
+        </div>
+      )}
 
-      {/* 左側導覽區 */}
-      <div className="tree-sidebar-left">
-        <div className="sidebar-tool-btn" title="過濾">
-          🔍
+      {/* 左側導覽區 - 只在非嵌入模式顯示 */}
+      {!embedded && (
+        <div className="tree-sidebar-left">
+          <div className="sidebar-tool-btn" title="過濾">
+            🔍
+          </div>
+          <div className="sidebar-tool-btn" title="圖層">
+            📚
+          </div>
+          <div className="sidebar-tool-btn" title="書籤">
+            🔖
+          </div>
+          <div className="sidebar-tool-btn" title="設定">
+            ⚙️
+          </div>
+          <div className="sidebar-tool-btn" title="匯出">
+            💾
+          </div>
+          <div className="sidebar-tool-btn" title="分享">
+            🔗
+          </div>
         </div>
-        <div className="sidebar-tool-btn" title="圖層">
-          📚
-        </div>
-        <div className="sidebar-tool-btn" title="書籤">
-          🔖
-        </div>
-        <div className="sidebar-tool-btn" title="設定">
-          ⚙️
-        </div>
-        <div className="sidebar-tool-btn" title="匯出">
-          💾
-        </div>
-        <div className="sidebar-tool-btn" title="分享">
-          🔗
-        </div>
-      </div>
+      )}
 
       {/* 中間主要內容區（樹狀圖） */}
       <div className="tree-diagram-flow">

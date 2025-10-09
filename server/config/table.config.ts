@@ -567,9 +567,19 @@ export const tableConfigs: TableConfig = {
         comment: '擁有者 ID',
       },
       {
+        name: 'main_tree_id',
+        type: ColumnType.INTEGER,
+        references: {
+          table: 'trees',
+          column: 'id',
+          onDelete: 'SET NULL',
+        },
+        comment: '主要樹狀圖 ID - 關聯到 trees 表',
+      },
+      {
         name: 'tree_data',
         type: ColumnType.JSONB,
-        comment: '樹狀圖資料（JSONB 格式）- 儲存專案的樹狀結構',
+        comment: '樹狀圖資料（JSONB 格式）- 儲存專案的樹狀結構（已廢棄,使用 main_tree_id 關聯）',
       },
       {
         name: 'tree_config',
@@ -698,7 +708,7 @@ export const tableConfigs: TableConfig = {
   // 樹狀圖資料表
   trees: {
     name: 'trees',
-    comment: '樹狀圖資料表',
+    comment: '樹狀圖資料表 - 儲存樹狀結構數據,支持 UI 佈局樹、PSD 結構樹等',
     columns: [
       {
         name: 'id',
@@ -734,18 +744,66 @@ export const tableConfigs: TableConfig = {
           column: 'id',
           onDelete: 'CASCADE',
         },
-        comment: '所屬專案 ID',
-      },
-      {
-        name: 'data',
-        type: ColumnType.JSONB,
-        comment: '樹狀圖資料（JSONB 格式）',
+        comment: '所屬專案 ID（可選）',
       },
       {
         name: 'tree_type',
         type: ColumnType.VARCHAR,
         length: 50,
-        comment: '樹狀圖類型',
+        notNull: true,
+        comment: '樹狀圖類型（ui_layout, psd_structure, game_logic, asset_tree 等）',
+      },
+      {
+        name: 'data',
+        type: ColumnType.JSONB,
+        notNull: true,
+        comment: '樹狀圖完整資料（JSONB 格式）- 包含根節點和所有子節點的完整樹狀結構',
+      },
+      {
+        name: 'config',
+        type: ColumnType.JSONB,
+        comment: '樹狀圖配置（JSONB 格式）- 包含顯示設定、方向、節點樣式等',
+      },
+      {
+        name: 'direction',
+        type: ColumnType.VARCHAR,
+        length: 10,
+        default: "'LR'",
+        comment: '樹狀圖方向（LR: 左到右, TB: 上到下）',
+      },
+      {
+        name: 'node_count',
+        type: ColumnType.INTEGER,
+        default: 0,
+        comment: '節點總數',
+      },
+      {
+        name: 'max_depth',
+        type: ColumnType.INTEGER,
+        default: 0,
+        comment: '最大深度',
+      },
+      {
+        name: 'version',
+        type: ColumnType.INTEGER,
+        default: 1,
+        comment: '版本號',
+      },
+      {
+        name: 'is_template',
+        type: ColumnType.BOOLEAN,
+        default: false,
+        comment: '是否為範本',
+      },
+      {
+        name: 'tags',
+        type: ColumnType.TEXT,
+        comment: '標籤（逗號分隔）',
+      },
+      {
+        name: 'owner_id',
+        type: ColumnType.INTEGER,
+        comment: '擁有者 ID',
       },
       {
         name: 'created_at',
@@ -763,13 +821,17 @@ export const tableConfigs: TableConfig = {
       {
         name: 'deleted_at',
         type: ColumnType.TIMESTAMP_WITH_TIMEZONE,
-        comment: '刪除時間',
+        comment: '刪除時間（軟刪除）',
       },
     ],
     indexes: [
       { name: 'idx_trees_project_id', columns: ['project_id'] },
       { name: 'idx_trees_tree_type', columns: ['tree_type'] },
+      { name: 'idx_trees_owner_id', columns: ['owner_id'] },
+      { name: 'idx_trees_is_template', columns: ['is_template'] },
       { name: 'idx_trees_data', columns: ['data'], type: 'GIN' },
+      { name: 'idx_trees_config', columns: ['config'], type: 'GIN' },
+      { name: 'idx_trees_name', columns: ['name'] },
     ],
     triggers: ['update_trees_updated_at'],
   },

@@ -13,6 +13,7 @@ import { initializeProjectsTable, loadTableData } from "./database/db-init.js";
 
 // 路由
 import projectsRouter from "./routes/projects.js";
+import treesRouter from "./routes/trees.js";
 
 dotenv.config();
 
@@ -368,6 +369,9 @@ app.get("/api/db/init", async (req: Request, res: Response) => {
 
 // 專案管理 API 路由
 app.use("/api/projects", projectsRouter);
+
+// 樹狀圖 API 路由
+app.use("/api/trees", treesRouter);
 
 app.get("/api", (req: Request, res: Response) => {
   res.json({

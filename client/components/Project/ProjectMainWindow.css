@@ -148,8 +148,8 @@
 .tree-diagram-container > div {
   flex: 1;
   min-height: 0;
-  width: 100%;
 }
+
 
 .no-tree-placeholder {
   display: flex;
